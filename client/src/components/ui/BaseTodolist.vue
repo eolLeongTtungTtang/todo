@@ -25,8 +25,6 @@
 import { reactive } from "vue";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
-
 const items = reactive([
   "봄이 산책시키기",
   "여름이 수영하기",
@@ -38,9 +36,12 @@ const items = reactive([
   "겨울이 스키타기",
 ]);
 
+const route = useRoute();
+
+// 페이지 별 투두 리스트 height
 const heightPerPage = {
   "/": "280px",
-  "/all-todos": "280px",
+  "/all-todos": "",
   "/calender": "280px",
   "/completed": "280px",
   "/tags": "280px",

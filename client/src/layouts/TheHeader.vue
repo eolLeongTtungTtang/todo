@@ -112,7 +112,6 @@ h2 {
 .headContainer {
   padding-left: 30px;
   padding-bottom: 10px;
-  margin: 0 0 25px 0;
   height: 100px;
   display: flex;
   justify-content: space-between;
