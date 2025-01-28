@@ -32,6 +32,10 @@ const topPanelClick = () => (dividerFlag.value = !dividerFlag.value);
   font-weight: bold !important;
 }
 
+.v-expansion-panel-text {
+  font-weight: normal;
+}
+
 ::v-deep .v-expansion-panel-text__wrapper {
   padding: 0 !important;
 }

@@ -31,7 +31,9 @@
       </template>
 
       <v-btn
-        :style="{ visibility: route.path !== '/tags' ? 'visible' : 'hidden' }"
+        :style="{
+          visibility: route.path !== '/tags' ? 'visible' : 'hidden',
+        }"
         class="addBtn"
         :icon="headerBtnIcon"
         elevation="0"
@@ -44,28 +46,24 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
+import { headerSettings } from "@/config/pageSettings";
 
 // 뒤로가기
 const goBack = () => window.history.back();
 
-const route = useRoute();
+let route = useRoute();
+// 페이지 별 헤더 아이콘 및 배경색 설정
+let headerColor = computed(() => {
+  return headerSettings[route.path]?.color || "#b9e192";
+});
 
-// router 주소 별 타이틀, 헤더 아이콘 및 배경색 설정
-const headerData = {
-  "/": { icon: "mdi-plus-circle", color: "white" },
-  "/all-todos": {
-    title: "할 일",
-  },
-  "/calender": { title: "캘린더" },
-  "/completed": { title: "완료항목" },
-  "/tags": { title: "태그별" },
-};
+const headerTitle = computed(() => {
+  return headerSettings[route.path]?.title || "";
+});
 
-let headerColor = computed(() => headerData[route.path]?.color || "#b9e192");
-let headerTitle = computed(() => headerData[route.path]?.title || "");
-let headerBtnIcon = computed(
-  () => headerData[route.path]?.icon || "mdi-plus-circle-outline"
-);
+const headerBtnIcon = computed(() => {
+  return headerSettings[route.path]?.icon || "mdi-plus-circle-outline";
+});
 
 // 현재 시간 설정
 const now = ref(new Date());
