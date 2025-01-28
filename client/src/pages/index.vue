@@ -1,18 +1,16 @@
 <template>
-  <div class="container">
-    <todo-summary />
+  <todo-summary />
 
-    <base-divider />
+  <base-divider />
 
-    <!-- todo list -->
-    <base-todolist />
+  <!-- todo list -->
+  <base-todolist />
 
-    <base-divider />
+  <base-divider />
 
-    <!-- move to button menu -->
-    <calender-button />
-    <comp-and-tag-button />
-  </div>
+  <!-- move to button menu -->
+  <calender-button />
+  <comp-and-tag-button />
 </template>
 
 <script setup>
@@ -23,10 +21,4 @@ import TodoSummary from "@/components/TodoSummary.vue";
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 </script>
 
-<style>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-</style>
+<style></style>

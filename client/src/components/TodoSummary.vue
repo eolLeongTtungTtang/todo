@@ -21,6 +21,7 @@
   align-items: center;
   width: 350px;
   height: 15px;
+  margin-top: 25px;
 }
 
 .todoCountDiv {
