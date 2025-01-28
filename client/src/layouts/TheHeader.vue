@@ -31,6 +31,7 @@
       </template>
 
       <v-btn
+        :style="{ visibility: route.path !== '/tags' ? 'visible' : 'hidden' }"
         class="addBtn"
         :icon="headerBtnIcon"
         elevation="0"
@@ -49,23 +50,21 @@ const goBack = () => window.history.back();
 
 const route = useRoute();
 
-// router 주소 별 타이틀, 헤더 아이콘 및 배경색색 설정
+// router 주소 별 타이틀, 헤더 아이콘 및 배경색 설정
 const headerData = {
-  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+  "/": { icon: "mdi-plus-circle", color: "white" },
   "/all-todos": {
     title: "할 일",
-    icon: "mdi-plus-circle-outline",
-    color: "#b9e192",
   },
-  "/": { title: "", icon: "mdi-plus-circle", color: "" },
-  "/": { title: "", icon: "mdi-plus-circle", color: "" },
-  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+  "/calender": { title: "캘린더" },
+  "/completed": { title: "완료항목" },
+  "/tags": { title: "태그별" },
 };
 
-let headerColor = computed(() => headerData[route.path]?.color || "white");
-let headerTitle = computed(() => headerData[route.path]?.title || "할 일");
+let headerColor = computed(() => headerData[route.path]?.color || "#b9e192");
+let headerTitle = computed(() => headerData[route.path]?.title || "");
 let headerBtnIcon = computed(
-  () => headerData[route.path]?.icon || "mdi-plus-circle"
+  () => headerData[route.path]?.icon || "mdi-plus-circle-outline"
 );
 
 // 현재 시간 설정
@@ -129,7 +128,7 @@ h2 {
 
 .addBtn.v-btn--density-default,
 .addBtn.v-btn--icon.v-btn--density-default {
-  width: 23px;
+  width: 22px;
   height: 21px;
   margin: 8px;
   padding: 0 !important;
