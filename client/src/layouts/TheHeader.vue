@@ -1,42 +1,97 @@
 <template>
-  <v-container class="headContainer">
-    <v-system-bar>
-      <v-icon icon="mdi-wifi-strength-4"></v-icon>
-      <v-icon icon="mdi-signal" class="ms-2"></v-icon>
-      <v-icon icon="mdi-battery" class="ms-2"></v-icon>
+  <v-container class="headContainer" :style="{ backgroundColor: headerColor }">
+    <v-system-bar :style="{ backgroundColor: headerColor }">
+      <div class="timeDiv">
+        <span class="ms-2"
+          >{{ formattedHour }}:{{ formattedMinutes }}{{ period }}</span
+        >
+      </div>
 
-      <span class="ms-2"
-        >{{ formattedHour }}:{{ formattedMinutes }}{{ period }}</span
-      >
+      <div>
+        <v-icon icon="mdi-wifi-strength-4"></v-icon>
+        <v-icon icon="mdi-signal" class="ms-2"></v-icon>
+        <v-icon icon="mdi-battery" class="ms-2"></v-icon>
+      </div>
     </v-system-bar>
 
-    <h2>ToDolist</h2>
-    <v-btn
-      density="compact"
-      icon="mdi-plus-circle"
-      elevation="0"
-      size="x-large"
-    ></v-btn>
+    <div class="headerContent">
+      <template v-if="route.path === '/'">
+        <h2>ToDolist</h2>
+      </template>
+      <template v-else>
+        <v-btn
+          class="backBtn"
+          icon="mdi-chevron-left"
+          variant="plain"
+          @click="goBack"
+        />
+        <h4>
+          {{ headerTitle }}
+        </h4>
+      </template>
+
+      <v-btn
+        class="addBtn"
+        :icon="headerBtnIcon"
+        elevation="0"
+        size="x-large"
+      ></v-btn>
+    </div>
   </v-container>
 </template>
 
 <script setup>
-const now = new Date();
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 
-// 24시간 형식을 12시간 형식으로 변환
-let hour = now.getHours();
-const minutes = now.getMinutes();
-const period = hour >= 12 ? "PM" : "AM";
+// 뒤로가기
+const goBack = () => window.history.back();
 
-if (hour > 12) {
-  hour -= 12; // 13시부터는 12시간 형식으로 변환
-} else if (hour === 0) {
-  hour = 12; // 0시는 12로 표시
-}
+const route = useRoute();
 
-// 두 자리로 포맷팅
-const formattedHour = String(hour).padStart(2, "0");
-const formattedMinutes = String(minutes).padStart(2, "0");
+// router 주소 별 타이틀, 헤더 아이콘 및 배경색색 설정
+const headerData = {
+  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+  "/all-todos": {
+    title: "할 일",
+    icon: "mdi-plus-circle-outline",
+    color: "#b9e192",
+  },
+  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+  "/": { title: "", icon: "mdi-plus-circle", color: "" },
+};
+
+let headerColor = computed(() => headerData[route.path]?.color || "white");
+let headerTitle = computed(() => headerData[route.path]?.title || "할 일");
+let headerBtnIcon = computed(
+  () => headerData[route.path]?.icon || "mdi-plus-circle"
+);
+
+// 현재 시간 설정
+const now = ref(new Date());
+const formattedHour = computed(() => {
+  const hours = now.value.getHours();
+  return String(hours > 12 ? hours - 12 : hours || 12).padStart(2, "0");
+});
+const formattedMinutes = computed(() =>
+  String(now.value.getMinutes()).padStart(2, "0")
+);
+const period = computed(() => (now.value.getHours() >= 12 ? "PM" : "AM"));
+
+const updateTime = () => {
+  now.value = new Date();
+};
+
+let timer = null;
+onMounted(() => {
+  updateTime();
+  timer = setInterval(updateTime, 1000);
+});
+
+onUnmounted(() => {
+  clearInterval(timer);
+});
 </script>
 
 <style scoped>
@@ -44,13 +99,51 @@ h2 {
   font-weight: normal;
 }
 
+.v-system-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 10px 0 10px;
+}
+
+.timeDiv {
+  font-weight: bolder;
+  opacity: 0.8;
+}
+
 .headContainer {
-  padding-right: 1px;
-  padding-bottom: 35px;
-  height: 130px;
-  width: 350px;
+  padding-left: 30px;
+  padding-bottom: 10px;
+  margin: 0 0 25px 0;
+  height: 100px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.addBtn.v-btn--density-default,
+.addBtn.v-btn--icon.v-btn--density-default {
+  width: 23px;
+  height: 21px;
+  margin: 8px;
+  padding: 0 !important;
+  min-width: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.backBtn {
+  width: 10px !important;
+  height: 10px !important;
+  font-size: large;
+  display: flex;
+  justify-content: center;
 }
 </style>

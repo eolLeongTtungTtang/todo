@@ -1,7 +1,4 @@
 <template>
-  <the-header>
-    <slot></slot>
-  </the-header>
   <div class="container">
     <todo-summary />
 
@@ -38,7 +35,6 @@
 </template>
 
 <script setup>
-import TheHeader from "@/layouts/TheHeader.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
 import CalenderButton from "@/components/CalenderButton.vue";
 import CompAndTagButton from "@/components/CompAndTagButton.vue";
