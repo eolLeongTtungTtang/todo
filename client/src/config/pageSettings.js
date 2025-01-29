@@ -13,7 +13,9 @@ export const todoListSettings = {
     todoListHeight: "43vh",
   },
   "/all-todos": {},
-  "/calender": {},
+  "/calender": {
+    todoListHeight: "26vh",
+  },
   "/completed": {
     todoListHeight: "61vh",
     emptyText: "완료",
