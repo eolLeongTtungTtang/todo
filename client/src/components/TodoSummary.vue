@@ -4,13 +4,10 @@
       <span>할 일 <span class="greyText">+13</span></span>
     </div>
     <RouterLink to="/all-todos"
-      ><v-btn
-        class="moreBtn"
-        append-icon="mdi-chevron-right"
-        variant="plain"
-        text="더보기"
-      ></v-btn
-    ></RouterLink>
+      ><v-btn class="moreBtn" append-icon="mdi-chevron-right" variant="plain"
+        ><span>더보기</span></v-btn
+      ></RouterLink
+    >
   </div>
 </template>
 
@@ -33,6 +30,7 @@
 .moreBtn {
   color: black;
   opacity: 1;
-  font-size: 17px;
+  font-size: 12px;
+  color: rgb(168, 168, 168);
 }
 </style>

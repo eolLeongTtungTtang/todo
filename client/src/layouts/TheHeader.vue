@@ -30,18 +30,10 @@
         </h4>
       </template>
 
-      <v-btn
-        :style="{
-          visibility:
-            route.path === '/tags' || route.path === '/completed'
-              ? 'hidden'
-              : 'visible',
-        }"
-        class="addBtn"
-        :icon="headerBtnIcon"
-        elevation="0"
-        size="x-large"
-      ></v-btn>
+      <todo-modal
+        :addbtnShow="addbtnShow"
+        :headerBtnIcon="headerBtnIcon"
+      ></todo-modal>
     </div>
   </v-container>
 </template>
@@ -50,6 +42,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { headerSettings } from "@/config/pageSettings";
+import TodoModal from "@/components/TodoModal.vue";
 
 // 뒤로가기
 const goBack = () => window.history.back();
@@ -66,6 +59,12 @@ const headerTitle = computed(() => {
 
 const headerBtnIcon = computed(() => {
   return headerSettings[route.path]?.icon || "mdi-plus-circle-outline";
+});
+
+const addbtnShow = computed(() => {
+  return route.path === "/tags" || route.path === "/completed"
+    ? "hidden"
+    : "visible";
 });
 
 // 현재 시간 설정
@@ -130,18 +129,6 @@ h2 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-}
-
-.addBtn.v-btn--density-default,
-.addBtn.v-btn--icon.v-btn--density-default {
-  width: 22px;
-  height: 21px;
-  margin: 8px;
-  padding: 0 !important;
-  min-width: 0 !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .backBtn {
