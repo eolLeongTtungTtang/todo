@@ -22,9 +22,8 @@
       </v-row>
     </template>
     <template v-else>
-      <div>
+      <div class="emptyDiv">
         <span>{{ emptyText }}한 항목이 없습니다.</span>
-        <v-icon icon="sticker-remove-outline"></v-icon>
       </div>
     </template>
   </v-container>
@@ -35,17 +34,17 @@ import { reactive, computed } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 
-const items = reactive([
-  "봄이 산책시키기",
-  "여름이 수영하기",
-  "가을이 하이킹",
-  "겨울이 스키타기",
-  "봄이 산책시키기",
-  "여름이 수영하기",
-  "가을이 하이킹",
-  "겨울이 스키타기",
-]);
-// const items = reactive([]);
+// const items = reactive([
+//   "봄이 산책시키기",
+//   "여름이 수영하기",
+//   "가을이 하이킹",
+//   "겨울이 스키타기",
+//   "봄이 산책시키기",
+//   "여름이 수영하기",
+//   "가을이 하이킹",
+//   "겨울이 스키타기",
+// ]);
+const items = reactive([]);
 
 const route = useRoute();
 // 페이지 별 투두 리스트 height
@@ -56,4 +55,9 @@ const emptyText = computed(
 );
 </script>
 
-<style></style>
+<style scoped>
+.emptyDiv {
+  display: flex;
+  align-items: center;
+}
+</style>
