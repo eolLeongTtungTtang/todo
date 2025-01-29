@@ -13,3 +13,9 @@ a {
 .greyText {
   color: rgb(168, 168, 168);
 }
+
+@media (min-width: 960px) {
+  .v-container {
+    max-width: 100%;
+  }
+}

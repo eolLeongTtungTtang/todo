@@ -10,10 +10,13 @@ export const headerSettings = {
 
 export const todoListSettings = {
   "/": {
-    todoListHeight: "280px",
+    todoListHeight: "43vh",
   },
   "/all-todos": {},
   "/calender": {},
-  "/completed": { emptyText: "완료" },
+  "/completed": {
+    todoListHeight: "61vh",
+    emptyText: "완료",
+  },
   "/tags": {},
 };

@@ -32,7 +32,10 @@
 
       <v-btn
         :style="{
-          visibility: route.path !== '/tags' ? 'visible' : 'hidden',
+          visibility:
+            route.path === '/tags' || route.path === '/completed'
+              ? 'hidden'
+              : 'visible',
         }"
         class="addBtn"
         :icon="headerBtnIcon"
