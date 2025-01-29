@@ -116,6 +116,12 @@ h2 {
   align-items: flex-end;
 }
 
+@media (min-width: 1280px) {
+  .v-container {
+    max-width: 100% !important;
+  }
+}
+
 .headerContent {
   display: flex;
   justify-content: space-between;

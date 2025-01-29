@@ -1,16 +1,17 @@
 <template>
   <v-container
     fluid
-    class="pa-2 pl-3 d-flex justify-center"
-    :style="{ height: listHeight, width: '350px' }"
+    class="pt-1 pr-2 pb-3 pl-6 d-flex justify-center"
+    :style="{ height: listHeight }"
   >
     <template v-if="items.length !== 0">
-      <v-row class="pa-2 pl-3 w-100">
+      <v-row>
         <v-col
           class="pa-0"
           style="height: 100%; max-height: 100%; overflow-y: auto"
         >
           <v-checkbox
+            class="pr-3"
             density="comfortable"
             v-for="(item, index) in items"
             :key="index"
@@ -34,17 +35,17 @@ import { reactive, computed } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 
-// const items = reactive([
-//   "봄이 산책시키기",
-//   "여름이 수영하기",
-//   "가을이 하이킹",
-//   "겨울이 스키타기",
-//   "봄이 산책시키기",
-//   "여름이 수영하기",
-//   "가을이 하이킹",
-//   "겨울이 스키타기",
-// ]);
-const items = reactive([]);
+const items = reactive([
+  "봄이 산책시키기",
+  "여름이 수영하기",
+  "가을이 하이킹",
+  "겨울이 스키타기",
+  "봄이 산책시키기",
+  "여름이 수영하기",
+  "가을이 하이킹",
+  "겨울이 스키타기",
+]);
+// const items = reactive([]);
 
 const route = useRoute();
 // 페이지 별 투두 리스트 height

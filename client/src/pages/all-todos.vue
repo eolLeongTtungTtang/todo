@@ -1,5 +1,6 @@
 <template>
-  <v-expansion-panels flat @click="topPanelClick">
+  <!-- <v-expansion-panels flat @click="topPanelClick"> -->
+  <v-expansion-panels flat v-model="panel">
     <v-expansion-panel title="지난 할 일">
       <v-expansion-panel-text>
         <base-todolist />
@@ -21,10 +22,12 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-let dividerFlag = ref(true);
-const topPanelClick = () => (dividerFlag.value = !dividerFlag.value);
+let panel = ref(null);
+let dividerFlag = computed(() => {
+  return typeof panel.value !== "number";
+});
 </script>
 
 <style scoped>

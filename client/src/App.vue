@@ -3,8 +3,8 @@
     <v-main>
       <the-header />
       <div class="container">
-      <router-view />
-    </div>
+        <router-view />
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -22,5 +22,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 12px 0 12px;
+  width: 100%;
 }
 </style>

@@ -2,7 +2,6 @@
   <v-divider
     :style="{ borderWidth: props.thickness, margin: props.dividerMargin }"
     class="divider"
-    width="350px"
   ></v-divider>
 </template>
 
@@ -23,5 +22,6 @@ const props = defineProps({
 .divider {
   border-color: black;
   opacity: 1 !important;
+  width: 100%;
 }
 </style>
