@@ -1,5 +1,4 @@
 <template>
-  <!-- <v-expansion-panels flat @click="topPanelClick"> -->
   <v-expansion-panels flat v-model="panel">
     <v-expansion-panel title="지난 할 일">
       <v-expansion-panel-text>

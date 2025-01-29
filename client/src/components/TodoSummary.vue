@@ -26,16 +26,13 @@
 
 .todoCountDiv {
   margin-left: 20px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: bold;
-}
-
-.greyText {
-  color: rgb(168, 168, 168);
 }
 
 .moreBtn {
   color: black;
   opacity: 1;
+  font-size: 17px;
 }
 </style>

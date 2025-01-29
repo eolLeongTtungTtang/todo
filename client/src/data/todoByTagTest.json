@@ -1,0 +1,82 @@
+{
+  "자택": [
+    {
+      "todo_id": 1,
+      "content": "봄이 산책시키기",
+      "date": "회의 후 결정",
+      "priority": "회의 후 결정",
+      "tag": "회의 후 결정",
+      "is_completed": true
+    },
+    {
+      "todo_id": 2,
+      "content": "집 청소하기",
+      "date": "2025-01-30",
+      "priority": "중간",
+      "tag": "청소",
+      "is_completed": false
+    },
+    {
+      "todo_id": 3,
+      "content": "강아지 목욕시키기",
+      "date": "2025-02-05",
+      "priority": "높음",
+      "tag": "반려동물",
+      "is_completed": false
+    }
+  ],
+  "회사": [
+    {
+      "todo_id": 1,
+      "content": "팀 회의 준비",
+      "date": "2025-01-29",
+      "priority": "높음",
+      "tag": "회의",
+      "is_completed": true
+    },
+    {
+      "todo_id": 2,
+      "content": "주간 보고서 작성",
+      "date": "2025-02-02",
+      "priority": "중간",
+      "tag": "업무",
+      "is_completed": false
+    }
+  ],
+  "외출": [
+    {
+      "todo_id": 1,
+      "content": "병원 예약",
+      "date": "2025-01-31",
+      "priority": "높음",
+      "tag": "건강",
+      "is_completed": false
+    },
+    {
+      "todo_id": 2,
+      "content": "친구와 만남",
+      "date": "2025-02-10",
+      "priority": "중간",
+      "tag": "친구",
+      "is_completed": false
+    }
+  ],
+  "no_tag": [
+    {
+      "todo_id": 1,
+      "content": "미팅 준비",
+      "date": "2025-01-28",
+      "priority": "중간",
+      "tag": "",
+      "is_completed": true
+    },
+    {
+      "todo_id": 2,
+      "content": "자동차 세차",
+      "date": "2025-02-03",
+      "priority": "낮음",
+      "tag": "",
+      "is_completed": false
+    }
+  ]
+}

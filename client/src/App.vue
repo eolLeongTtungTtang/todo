@@ -16,6 +16,7 @@ import TheHeader from "./layouts/TheHeader.vue";
 <style lang="scss">
 body {
   font-family: "Pretendard-Regular", sans-serif;
+  font-size: 17px;
 }
 
 .container {

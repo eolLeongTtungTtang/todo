@@ -51,7 +51,7 @@
 
 .btnText {
   width: 100%;
-  font-size: 15px;
+  font-size: 17px;
   display: flex;
   justify-content: space-between;
   align-items: center;
