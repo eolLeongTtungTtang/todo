@@ -1,10 +1,21 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/your_database_name?useSSL=false&serverTimezone=UTC
-    username: your_username
-    password: your_password
+    url: jdbc:mysql://localhost:3306/todo?useSSL=false&serverTimezone=UTC
+    username: root
+    password: wjsdofla
     driver-class-name: com.mysql.cj.jdbc.Driver
-  mybatis:
-    mapper-locations: classpath:mapper/*.xml
-    configuration:
-      map-underscore-to-camel-case: true # 스네이크 케이스를 카멜 케이스로 매핑
+springdoc:
+  swagger-ui:
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: 2
+    defaultModelExpandDepth: 2
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true # 스네이크 케이스를 카멜 케이스로 매핑
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # SQL 로그를 콘솔에 출력
+  type-aliases-package: com.eolLeongTtungTtang.todo.domain
+  type-handlers-package: com.eolLeongTtungTtang.todo.handler  # TypeHandler 경로 등록
