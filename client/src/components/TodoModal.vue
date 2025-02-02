@@ -28,12 +28,63 @@
 
         <base-divider thickness="1" />
 
-        <!-- input datePicker -->
+        <div class="dateAndTimeDiv">
+          <button class="dateAndTimeSelector" @click="openCalender">
+            <span>{{ formattedDate }}&nbsp</span>
+            <v-icon size="sm">mdi-calendar-today-outline</v-icon>
+          </button>
+          <!-- 캘린더 모달 -->
+          <v-dialog v-model="calenderModal">
+            <v-locale-provider locale="ko">
+              <v-date-picker
+                class="datePicker"
+                v-model="selectedDate"
+                hide-header
+              ></v-date-picker>
+            </v-locale-provider>
+          </v-dialog>
 
-        <span class="spanTitle">2025-01-30&nbsp</span>
-        <v-icon size="sm">mdi-calendar-today-outline</v-icon>
-        <span class="spanTitle">하루종일&nbsp</span
-        ><v-icon size="sm">mdi-all-inclusive</v-icon>
+          <button class="dateAndTimeSelector" @click="openTimePicker">
+            <template v-if="selectedTime">
+              <span>{{ selectedTime }}&nbsp</span
+              ><v-icon size="sm">mdi-archive-clock-outline</v-icon>
+            </template>
+            <template v-else
+              ><span>하루종일&nbsp</span
+              ><v-icon size="sm">mdi-all-inclusive</v-icon></template
+            >
+          </button>
+          <!-- 시간 선택 모달 -->
+          <v-dialog v-model="timePickerModal">
+            <v-container>
+              <v-row
+                justify="center"
+                align-items="center"
+                style="background-color: white; border-radius: 4px"
+              >
+                <v-time-picker
+                  title="시간을 선택해주세요."
+                  color="green-lighten-1"
+                  format="24hr"
+                  v-model="selectedTime"
+                />
+                <div class="confirmBtn">
+                  <base-button
+                    action="confirm"
+                    variant="plain"
+                    @click="timePickerModal = false"
+                  ></base-button>
+                  <base-button
+                    action="delete"
+                    variant="plain"
+                    @click="(timePickerModal = false), (selectedTime = null)"
+                  ></base-button>
+                </div>
+              </v-row>
+            </v-container>
+          </v-dialog>
+        </div>
+
         <p class="spanTitle">메모</p>
         <v-textarea
           class="inputMemo"
@@ -86,7 +137,8 @@
 <script setup>
 import BaseButton from "./ui/BaseButton.vue";
 import BaseDivider from "./ui/BaseDivider.vue";
-import { ref, defineProps } from "vue";
+import { VTimePicker } from "vuetify/labs/VTimePicker";
+import { ref, defineProps, watch, computed } from "vue";
 
 const props = defineProps({
   addbtnShow: {
@@ -108,6 +160,45 @@ const dialog = ref(false);
 const modalTitle = ref("할 일 추가");
 
 const tagArr = ["자택", "학교", "직장", "기타"];
+
+// 캘린더 모달
+const calenderModal = ref(false);
+const openCalender = () => {
+  calenderModal.value = !calenderModal.value;
+};
+
+// 날짜 선택
+const selectedDate = ref(new Date());
+
+// 날짜 포맷
+const formattedDate = computed(() => {
+  const date = new Date(selectedDate.value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+});
+
+// 날짜 변경 시 모달 닫기
+watch(selectedDate, (newDate) => {
+  console.log("날짜 변경: ", newDate);
+  calenderModal.value = false;
+});
+
+// 시간 선택
+const selectedTime = ref(null);
+
+// 시간 선택 모달
+const timePickerModal = ref(false);
+const openTimePicker = () => {
+  timePickerModal.value = !timePickerModal.value;
+};
+
+// 시간 선택 완료 시 모달 닫기
+watch(selectedDate, (newTime) => {
+  console.log("시간 변경: ", newTime);
+  timePickerModal.value = false;
+});
 </script>
 
 <style scoped>
@@ -121,6 +212,19 @@ const tagArr = ["자택", "학교", "직장", "기타"];
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.dateAndTimeDiv {
+  display: flex;
+  font-size: 14px;
+}
+
+.dateAndTimeSelector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  margin-bottom: 8px;
 }
 
 /* v-dialog의 아웃라인 스타일 */
@@ -162,7 +266,7 @@ const tagArr = ["자택", "학교", "직장", "기타"];
 
 .spanTitle {
   font-size: 14px;
-  margin-left: 15px;
+  margin-left: 10px;
 }
 
 .btnContent {
