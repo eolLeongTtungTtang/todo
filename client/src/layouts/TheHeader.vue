@@ -1,19 +1,5 @@
 <template>
   <v-container class="headContainer" :style="{ backgroundColor: headerColor }">
-    <v-system-bar :style="{ backgroundColor: headerColor }">
-      <div class="timeDiv">
-        <span class="ms-2"
-          >{{ formattedHour }}:{{ formattedMinutes }}{{ period }}</span
-        >
-      </div>
-
-      <div>
-        <v-icon icon="mdi-wifi-strength-4"></v-icon>
-        <v-icon icon="mdi-signal" class="ms-2"></v-icon>
-        <v-icon icon="mdi-battery" class="ms-2"></v-icon>
-      </div>
-    </v-system-bar>
-
     <div class="headerContent">
       <template v-if="route.path === '/'">
         <h2>ToDolist</h2>
@@ -66,31 +52,6 @@ const addbtnShow = computed(() => {
     ? "hidden"
     : "visible";
 });
-
-// 현재 시간 설정
-const now = ref(new Date());
-const formattedHour = computed(() => {
-  const hours = now.value.getHours();
-  return String(hours > 12 ? hours - 12 : hours || 12).padStart(2, "0");
-});
-const formattedMinutes = computed(() =>
-  String(now.value.getMinutes()).padStart(2, "0")
-);
-const period = computed(() => (now.value.getHours() >= 12 ? "PM" : "AM"));
-
-const updateTime = () => {
-  now.value = new Date();
-};
-
-let timer = null;
-onMounted(() => {
-  updateTime();
-  timer = setInterval(updateTime, 1000);
-});
-
-onUnmounted(() => {
-  clearInterval(timer);
-});
 </script>
 
 <style scoped>
@@ -112,7 +73,7 @@ h2 {
 .headContainer {
   padding-left: 30px;
   padding-bottom: 10px;
-  height: 100px;
+  height: 124px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;

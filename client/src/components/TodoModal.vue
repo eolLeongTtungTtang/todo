@@ -97,11 +97,11 @@
         <base-divider thickness="1" />
 
         <span class="spanTitle">중요도</span>
-        <v-radio-group v-model="selected" inline hide-details>
+        <v-radio-group v-model="selectedPriority" inline hide-details>
           <v-radio
             v-for="(radio, index) in radioOptions"
             :key="index"
-            :value="radio.value"
+            :value="radio.priority"
             :color="radio.color"
             :class="radio.class"
           ></v-radio>
@@ -121,12 +121,12 @@
           <base-button
             action="confirm"
             variant="plain"
-            @click="dialog = false"
+            @click="confirmAddTodo"
           ></base-button>
           <base-button
             action="cancel"
             variant="plain"
-            @click="dialog = false"
+            @click="cancelTodo"
           ></base-button>
         </div>
       </template>
@@ -149,11 +149,11 @@ const props = defineProps({
   },
 });
 
-const selected = ref("");
+const selectedPriority = ref(null);
 const radioOptions = [
-  { value: 1, color: "red", class: "radio-red" },
-  { value: 2, color: "blue", class: "radio-blue" },
-  { value: 3, color: "yellow", class: "radio-yellow" },
+  { priority: 1, color: "red", class: "radio-red" },
+  { priority: 2, color: "blue", class: "radio-blue" },
+  { priority: 3, color: "yellow", class: "radio-yellow" },
 ];
 
 const dialog = ref(false);
@@ -199,6 +199,21 @@ watch(selectedDate, (newTime) => {
   console.log("시간 변경: ", newTime);
   timePickerModal.value = false;
 });
+
+const confirmAddTodo = (data) => {
+  // 할일 추가 api 호출
+  resetModalData();
+};
+
+const cancelTodo = () => {
+  resetModalData();
+};
+
+const resetModalData = () => {
+  dialog.value = false;
+  selectedDate.value = new Date();
+  selectedTime.value = null;
+};
 </script>
 
 <style scoped>
