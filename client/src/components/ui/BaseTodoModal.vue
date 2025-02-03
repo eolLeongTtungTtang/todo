@@ -1,16 +1,5 @@
 <template>
-  <v-btn
-    @click="dialog = true"
-    :style="{
-      visibility: addbtnShow,
-    }"
-    class="addBtn"
-    :icon="headerBtnIcon"
-    elevation="0"
-    size="x-large"
-  ></v-btn>
-
-  <v-dialog v-model="dialog" width="90%" height="85%">
+  <v-dialog width="90%" height="85%">
     <v-card
       max-width="100%"
       max-height="100%"
@@ -118,36 +107,77 @@
 
       <template v-slot:actions>
         <div class="confirmBtn">
-          <base-button
-            action="confirm"
-            variant="plain"
-            @click="confirmAddTodo"
-          ></base-button>
+          <template v-if="mode === 'add'">
+            <base-button
+              action="confirm"
+              variant="plain"
+              @click="addTodo"
+            ></base-button>
+            <base-button
+              action="cancel"
+              variant="plain"
+              @click="cancelTodo"
+            ></base-button>
+          </template>
+          <template v-if="mode === 'edit'">
+            <base-button
+              action="edit"
+              variant="plain"
+              @click="editTodo"
+            ></base-button>
+            <base-button
+              action="delete"
+              variant="plain"
+              @click="confirmDeleteModal = true"
+            ></base-button>
+          </template>
+        </div>
+      </template>
+
+      <v-dialog
+        class="confirmDeleteDialog"
+        v-model="confirmDeleteModal"
+        @click:outside="confirmDeleteModal = false"
+      >
+        <v-card class="outlined-dialog" max-width="100%" max-height="100%">
+          <span>할 일을 삭제합니다.</span>
+          <base-button action="confirm" variant="plain" @click="deleteTodo"
+            >확인</base-button
+          >
           <base-button
             action="cancel"
             variant="plain"
-            @click="cancelTodo"
-          ></base-button>
-        </div>
-      </template>
+            @click="confirmDeleteModal = false"
+            >취소</base-button
+          >
+        </v-card>
+      </v-dialog>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup>
-import BaseButton from "./ui/BaseButton.vue";
-import BaseDivider from "./ui/BaseDivider.vue";
+import BaseButton from "./BaseButton.vue";
+import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, defineProps, watch, computed } from "vue";
+import { ref, watch, computed, defineEmits, defineProps } from "vue";
 
 const props = defineProps({
-  addbtnShow: {
-    type: String,
-  },
-  headerBtnIcon: {
-    type: String,
-  },
+  mode: String,
 });
+
+const mode = props.mode;
+
+const modalType = {
+  add: {
+    title: "추가",
+  },
+  edit: {
+    title: "수정",
+  },
+};
+
+const modalTitle = ref("할 일 " + modalType[mode].title);
 
 const selectedPriority = ref(null);
 const radioOptions = [
@@ -155,9 +185,6 @@ const radioOptions = [
   { priority: 2, color: "blue", class: "radio-blue" },
   { priority: 3, color: "yellow", class: "radio-yellow" },
 ];
-
-const dialog = ref(false);
-const modalTitle = ref("할 일 추가");
 
 const tagArr = ["자택", "학교", "직장", "기타"];
 
@@ -200,35 +227,42 @@ watch(selectedDate, (newTime) => {
   timePickerModal.value = false;
 });
 
-const confirmAddTodo = (data) => {
+// TODO 추가
+const addTodo = (data) => {
   // 할일 추가 api 호출
   resetModalData();
 };
 
+// TODO 추가 취소
 const cancelTodo = () => {
   resetModalData();
 };
 
+// TODO 수정
+const editTodo = () => {
+  // 할일 update api 호출
+  resetModalData();
+};
+
+// TODO 삭제
+let confirmDeleteModal = ref(false);
+
+const deleteTodo = () => {
+  // 할일 삭제 api 호출
+  confirmDeleteModal = false;
+  resetModalData();
+};
+
+const emit = defineEmits(["close"]);
+
 const resetModalData = () => {
-  dialog.value = false;
   selectedDate.value = new Date();
   selectedTime.value = null;
+  emit("close");
 };
 </script>
 
 <style scoped>
-.addBtn.v-btn--density-default,
-.addBtn.v-btn--icon.v-btn--density-default {
-  width: 22px;
-  height: 21px;
-  margin: 8px;
-  padding: 0 !important;
-  min-width: 0 !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .dateAndTimeDiv {
   display: flex;
   font-size: 14px;
@@ -334,5 +368,10 @@ const resetModalData = () => {
   background-color: yellow !important;
   width: 19px;
   height: 19px;
+}
+
+.confirmDeleteDialog {
+  width: 45vh;
+  height: 30vh;
 }
 </style>

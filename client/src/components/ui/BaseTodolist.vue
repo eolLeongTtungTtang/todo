@@ -17,20 +17,38 @@
           :key="index"
           hide-details="false"
           :label="item"
-        />
+        >
+          <template #label>
+            <v-label @dblclick="handleDoubleClick(item)">
+              {{ item }}
+            </v-label>
+          </template>
+        </v-checkbox>
       </v-col>
     </v-row>
   </v-container>
 
-  <v-container v-else fluid class="emptyDiv" :style="{ height: listHeight }">
+  <base-todo-modal
+    v-model="todoModal"
+    mode="edit"
+    @close="closeTodoModal"
+  ></base-todo-modal>
+
+  <v-container
+    v-if="items.length === 0"
+    fluid
+    class="emptyDiv"
+    :style="{ height: listHeight }"
+  >
     <span>{{ emptyText }}한 항목이 없습니다.</span>
   </v-container>
 </template>
 
 <script setup>
-import { reactive, computed, defineEmits } from "vue";
+import { ref, reactive, computed, defineEmits } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
+import BaseTodoModal from "./BaseTodoModal.vue";
 
 const items = reactive([
   "봄이 산책시키기",
@@ -49,7 +67,7 @@ const items = reactive([
 ]);
 // const items = reactive([]);
 
-const emit = defineEmits(["todoExist"]);
+const emit = defineEmits(["todoExist", "close"]);
 emit("todoExist", items.length > 0);
 
 const route = useRoute();
@@ -59,6 +77,25 @@ const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
 const emptyText = computed(
   () => todoListSettings[route.path]?.emptyText || "등록"
 );
+
+// 할 일 수정 및 삭제 모달
+const todoModal = ref(false);
+
+// 레이블 더블 클릭
+const handleDoubleClick = (item) => {
+  todoModal.value = true;
+};
+
+// 모달 닫기
+const closeTodoModal = () => {
+  todoModal.value = false;
+};
+
+const resetModalData = () => {
+  selectedDate.value = new Date();
+  selectedTime.value = null;
+  emit("close");
+};
 </script>
 
 <style scoped>

@@ -16,19 +16,34 @@
         </h4>
       </template>
 
-      <todo-modal
-        :addbtnShow="addbtnShow"
-        :headerBtnIcon="headerBtnIcon"
-      ></todo-modal>
+      <v-btn
+        @click="todoModal = true"
+        :style="{
+          visibility: addbtnShow,
+        }"
+        class="addBtn"
+        :icon="headerBtnIcon"
+        elevation="0"
+        size="x-large"
+      ></v-btn>
+
+      <base-todo-modal v-model="todoModal" mode="add" @close="closeTodoModal"></base-todo-modal>
     </div>
   </v-container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { headerSettings } from "@/config/pageSettings";
-import TodoModal from "@/components/TodoModal.vue";
+import BaseTodoModal from "@/components/ui/BaseTodoModal.vue";
+
+const todoModal = ref(false);
+
+// 모달 닫기
+const closeTodoModal = () => {
+  todoModal.value = false;
+};
 
 // 뒤로가기
 const goBack = () => window.history.back();
@@ -55,6 +70,18 @@ const addbtnShow = computed(() => {
 </script>
 
 <style scoped>
+.addBtn.v-btn--density-default,
+.addBtn.v-btn--icon.v-btn--density-default {
+  width: 22px;
+  height: 21px;
+  margin: 8px;
+  padding: 0 !important;
+  min-width: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 h2 {
   font-weight: normal;
 }
