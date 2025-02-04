@@ -135,22 +135,29 @@
       </template>
 
       <v-dialog
-        class="confirmDeleteDialog"
         v-model="confirmDeleteModal"
         @click:outside="confirmDeleteModal = false"
       >
-        <v-card class="outlined-dialog" max-width="100%" max-height="100%">
-          <span>할 일을 삭제합니다.</span>
-          <base-button action="confirm" variant="plain" @click="deleteTodo"
-            >확인</base-button
+        <v-container class="confirmDeleteContainer">
+          <v-row
+            justify="center"
+            align-items="center"
+            style="background-color: white; border-radius: 4px"
           >
-          <base-button
-            action="cancel"
-            variant="plain"
-            @click="confirmDeleteModal = false"
-            >취소</base-button
-          >
-        </v-card>
+            <span class="mb-1">할 일을 삭제합니다.</span>
+            <div class="confirmBtn">
+              <base-button action="confirm" variant="plain" @click="deleteTodo"
+                >확인</base-button
+              >
+              <base-button
+                action="cancel"
+                variant="plain"
+                @click="confirmDeleteModal = false"
+                >취소</base-button
+              >
+            </div>
+          </v-row>
+        </v-container>
       </v-dialog>
     </v-card>
   </v-dialog>
@@ -160,7 +167,7 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed, defineEmits, defineProps } from "vue";
+import { ref, watch, computed, defineProps } from "vue";
 
 const props = defineProps({
   mode: String,
@@ -249,7 +256,7 @@ let confirmDeleteModal = ref(false);
 
 const deleteTodo = () => {
   // 할일 삭제 api 호출
-  confirmDeleteModal = false;
+  confirmDeleteModal.value = false;
   resetModalData();
 };
 
@@ -344,7 +351,7 @@ const resetModalData = () => {
   align-items: center;
   width: 100%;
   gap: 10px;
-  margin-bottom: 4vh;
+  margin-bottom: 3vh;
 }
 
 .v-radio-group .v-input__details {
@@ -370,8 +377,14 @@ const resetModalData = () => {
   height: 19px;
 }
 
-.confirmDeleteDialog {
+.confirmDeleteContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
   width: 45vh;
   height: 30vh;
+  border: 2px solid black;
+  border-radius: 20px !important;
+  background-color: white;
 }
 </style>
