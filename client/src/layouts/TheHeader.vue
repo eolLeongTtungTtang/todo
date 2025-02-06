@@ -27,17 +27,23 @@
         size="x-large"
       ></v-btn>
 
-      <base-todo-modal v-model="todoModal" mode="add" @close="closeTodoModal"></base-todo-modal>
+      <base-todo-modal
+        v-model="todoModal"
+        mode="add"
+        @close="closeTodoModal"
+      ></base-todo-modal>
     </div>
   </v-container>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { headerSettings } from "@/config/pageSettings";
 import BaseTodoModal from "@/components/ui/BaseTodoModal.vue";
 
+let route = useRoute();
+let router = useRouter();
 const todoModal = ref(false);
 
 // 모달 닫기
@@ -46,9 +52,10 @@ const closeTodoModal = () => {
 };
 
 // 뒤로가기
-const goBack = () => window.history.back();
+const goBack = () => {
+  router.go(-1);
+};
 
-let route = useRoute();
 // 페이지 별 헤더 아이콘 및 배경색 설정
 let headerColor = computed(() => {
   return headerSettings[route.path]?.color || "#b9e192";

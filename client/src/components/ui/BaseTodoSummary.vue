@@ -11,12 +11,17 @@
       ></RouterLink
     >
   </div>
+  <base-divider />
 </template>
 
 <script setup>
-import { inject } from "vue";
+import BaseDivider from "./BaseDivider.vue";
 
-const todoCount = inject("todoCount");
+defineProps({
+  todoCount: {
+    type: Number,
+  },
+});
 </script>
 
 <style>

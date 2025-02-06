@@ -1,6 +1,8 @@
 <template>
+  <base-todo-summary v-if="route.path === '/'" :todoCount="count" />
+
   <v-container
-    v-if="todos.length !== 0"
+    v-if="todos.length > 0"
     fluid
     class="d-flex justify-center"
     :style="{ height: listHeight }"
@@ -45,24 +47,25 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
+import BaseTodoSummary from "./BaseTodoSummary.vue";
 import api from "@/plugins/axios";
 
-const todos = ref([]);
-const errorMsg = ref("");
+const route = useRoute();
 
-const todoCount = inject("todoCount");
+const todos = ref([]); // todo Array
+const errorMsg = ref(""); // 에러 메세지
+const count = ref(todos.value.length); // todo 개수
+const todoModal = ref(false); // 할 일 수정 및 삭제 모달
 
-watch(
-  todos,
-  (updatedTodos) => {
-    todoCount.value = updatedTodos.length;
-  },
-  { deep: true, immediate: true }
-);
+const emit = defineEmits(["existence", "close"]);
+
+watch(todos, (newTodos) => {
+  count.value = newTodos.length;
+});
 
 onMounted(async () => {
   const response = await api.get("/todos");
@@ -72,21 +75,16 @@ onMounted(async () => {
   } else {
     errorMsg.value = response.message;
   }
+
+  emit("existence", todos.value.length > 0);
 });
 
-const emit = defineEmits(["todoExist", "close"]);
-emit("todoExist", todos.value.length > 0);
-
-const route = useRoute();
 // 페이지 별 투두 리스트 height
 const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
 
 const emptyText = computed(
   () => todoListSettings[route.path]?.emptyText || "등록"
 );
-
-// 할 일 수정 및 삭제 모달
-const todoModal = ref(false);
 
 // 레이블 더블 클릭
 const handleDoubleClick = (todo) => {

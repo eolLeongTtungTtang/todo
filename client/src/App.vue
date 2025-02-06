@@ -3,7 +3,7 @@
     <v-main>
       <the-header />
       <div class="container">
-        <router-view />
+        <router-view :key="route.fullPath" />
       </div>
     </v-main>
   </v-app>
@@ -11,6 +11,9 @@
 
 <script setup>
 import TheHeader from "./layouts/TheHeader.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 </script>
 
 <style lang="scss">

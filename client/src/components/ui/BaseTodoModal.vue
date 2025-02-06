@@ -215,7 +215,6 @@ const formattedDate = computed(() => {
 
 // 날짜 변경 시 모달 닫기
 watch(selectedDate, (newDate) => {
-  console.log("날짜 변경: ", newDate);
   calenderModal.value = false;
 });
 
@@ -230,7 +229,6 @@ const openTimePicker = () => {
 
 // 시간 선택 완료 시 모달 닫기
 watch(selectedDate, (newTime) => {
-  console.log("시간 변경: ", newTime);
   timePickerModal.value = false;
 });
 

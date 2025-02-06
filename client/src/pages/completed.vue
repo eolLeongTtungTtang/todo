@@ -5,7 +5,7 @@
     }}</v-btn>
   </template>
 
-  <base-todolist @todo-exist="updateTodoExist"></base-todolist>
+  <base-todolist @existence="updateTodoExist"></base-todolist>
 
   <template v-if="todoExist">
     <div class="buttonDiv">
