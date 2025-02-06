@@ -3,8 +3,6 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
-
 const { action } = defineProps({
   action: String,
 });

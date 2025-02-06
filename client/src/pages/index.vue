@@ -19,6 +19,10 @@ import CalenderButton from "@/components/CalenderButton.vue";
 import CompAndTagButton from "@/components/CompAndTagButton.vue";
 import TodoSummary from "@/components/TodoSummary.vue";
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
+import { provide, ref } from "vue";
+
+const todoCount = ref(0);
+provide("todoCount", todoCount);
 </script>
 
 <style></style>

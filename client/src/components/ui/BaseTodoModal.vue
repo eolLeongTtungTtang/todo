@@ -167,7 +167,7 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed, defineProps } from "vue";
+import { ref, watch, computed } from "vue";
 
 const props = defineProps({
   mode: String,

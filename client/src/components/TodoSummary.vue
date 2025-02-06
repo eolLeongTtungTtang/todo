@@ -1,7 +1,9 @@
 <template>
   <div class="countAndAllContainer">
     <div class="todoCountDiv">
-      <span>할 일 <span class="greyText">+13</span></span>
+      <span
+        >할 일 <span class="greyText">+{{ todoCount }}</span></span
+      >
     </div>
     <RouterLink to="/all-todos"
       ><v-btn class="moreBtn" append-icon="mdi-chevron-right" variant="plain"
@@ -10,6 +12,12 @@
     >
   </div>
 </template>
+
+<script setup>
+import { inject } from "vue";
+
+const todoCount = inject("todoCount");
+</script>
 
 <style>
 .countAndAllContainer {

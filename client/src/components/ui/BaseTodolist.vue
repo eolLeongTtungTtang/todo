@@ -1,6 +1,6 @@
 <template>
   <v-container
-    v-if="items.length !== 0"
+    v-if="todos.length !== 0"
     fluid
     class="d-flex justify-center"
     :style="{ height: listHeight }"
@@ -13,14 +13,14 @@
         <v-checkbox
           class="pr-3"
           density="comfortable"
-          v-for="(item, index) in items"
-          :key="index"
+          v-for="todo in todos"
+          :key="todo.todoId"
           hide-details="false"
-          :label="item"
+          :label="todo.title"
         >
           <template #label>
-            <v-label @dblclick="handleDoubleClick(item)">
-              {{ item }}
+            <v-label @dblclick="handleDoubleClick(todo)">
+              {{ todo.title }}
             </v-label>
           </template>
         </v-checkbox>
@@ -35,7 +35,7 @@
   ></base-todo-modal>
 
   <v-container
-    v-if="items.length === 0"
+    v-if="todos.length === 0"
     fluid
     class="emptyDiv"
     :style="{ height: listHeight }"
@@ -45,30 +45,37 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineEmits } from "vue";
+import { ref, computed, onMounted, inject, watch } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
+import api from "@/plugins/axios";
 
-const items = reactive([
-  "봄이 산책시키기",
-  "여름이 수영하기",
-  "가을이 하이킹",
-  "겨울이 스키타기",
-  "봄이 산책시키기",
-  "여름이 수영하기",
-  "가을이 하이킹",
-  "겨울이 스키타기",
-  "겨울이 스키타기",
-  "겨울이 스키타기",
-  "겨울이 스키타기",
-  "겨울이 스키타기",
-  "겨울이 스키타기",
-]);
-// const items = reactive([]);
+const todos = ref([]);
+const errorMsg = ref("");
+
+const todoCount = inject("todoCount");
+
+watch(
+  todos,
+  (updatedTodos) => {
+    todoCount.value = updatedTodos.length;
+  },
+  { deep: true, immediate: true }
+);
+
+onMounted(async () => {
+  const response = await api.get("/todos");
+
+  if (response.success) {
+    todos.value = response.data;
+  } else {
+    errorMsg.value = response.message;
+  }
+});
 
 const emit = defineEmits(["todoExist", "close"]);
-emit("todoExist", items.length > 0);
+emit("todoExist", todos.value.length > 0);
 
 const route = useRoute();
 // 페이지 별 투두 리스트 height
@@ -82,7 +89,7 @@ const emptyText = computed(
 const todoModal = ref(false);
 
 // 레이블 더블 클릭
-const handleDoubleClick = (item) => {
+const handleDoubleClick = (todo) => {
   todoModal.value = true;
 };
 
