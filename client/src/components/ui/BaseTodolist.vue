@@ -51,25 +51,53 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
 
-const route = useRoute();
-
+// Props 정의
 const props = defineProps({
   todos: Array,
   modelValue: Array,
   selectAll: Boolean,
 });
 
+// Emit 정의
 const emit = defineEmits(["close", "update:modelValue"]);
 
+// 상태 변수
+const route = useRoute();
 const todos = ref([]); // todo Array
+const checkedTodos = ref([]); // 체크된 todo 배열
 const todoModal = ref(false); // 할 일 수정 및 삭제 모달
-const checkedTodos = ref([...props.modelValue]);
 
+// 페이지 별 todo 리스트의 height
+const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
+
+// empty 텍스트 설정
+const emptyText = computed(
+  () => todoListSettings[route.path]?.emptyText || "등록"
+);
+
+// 초기화: checkedTodos가 배열인지 확인
+onMounted(() => {
+  if (!Array.isArray(checkedTodos.value)) {
+    checkedTodos.value = [];
+  }
+});
+
+// props.modelValue가 변경될 때 checkedTodos 업데이트
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    if (Array.isArray(newVal)) {
+      checkedTodos.value = newVal;
+    }
+  }
+);
+
+// props.todos가 변경될 때 todos 업데이트
 watch(
   () => props.todos,
   (newTodos) => {
@@ -78,12 +106,11 @@ watch(
   { immediate: true }
 );
 
-// 전체선택 watch
+// selectAll이 변경될 때 전체 선택 상태 업데이트
 watch(
   () => props.selectAll,
   (selectedAll) => {
     if (selectedAll) {
-      // Set을 활용하여 중복 제거
       checkedTodos.value = [...new Set(todos.value.map((todo) => todo.todoId))];
     } else {
       checkedTodos.value = [];
@@ -92,20 +119,12 @@ watch(
   { immediate: true }
 );
 
+// checkedTodos 변경 시 부모 컴포넌트로 값 전달
 watch(checkedTodos, (newCheckedTodos) => {
   emit("update:modelValue", newCheckedTodos);
 });
 
-/* 낱개로 전체 선택 시 '전체선택'으로 completed.vue 문구 변경 필요  */
-
-// 페이지 별 투두 리스트 height
-const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
-
-const emptyText = computed(
-  () => todoListSettings[route.path]?.emptyText || "등록"
-);
-
-// 레이블 더블 클릭
+// 레이블 더블 클릭 시 모달 열기
 const handleDoubleClick = (todo) => {
   todoModal.value = true;
 };
@@ -115,9 +134,8 @@ const closeTodoModal = () => {
   todoModal.value = false;
 };
 
+// 모달 데이터 초기화 및 emit
 const resetModalData = () => {
-  selectedDate.value = new Date();
-  selectedTime.value = null;
   emit("close");
 };
 </script>
