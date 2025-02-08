@@ -11,15 +11,6 @@
     v-model="checkedTodos"
   ></base-todolist>
 
-  <template v-if="returnMessage">
-    <v-alert
-      class="messageAlert"
-      :text="returnMessage"
-      :type="messageType"
-      variant="tonal"
-    ></v-alert>
-  </template>
-
   <template v-if="todos && todos.length > 0">
     <div class="buttonDiv">
       <base-button
@@ -47,19 +38,20 @@
         >
           <div class="text-center">
             <span class="spanText" v-if="deleteFlag">{{ deleteText }}</span>
-            <span class="spanText" v-if="restoreFlag">{{ restoreText }}</span>
+            <span class="spanText" v-else>{{ restoreText }}</span>
           </div>
 
           <div class="confirmBtn">
-            <base-button action="confirm" variant="plain" @click="actTodo"
-              >확인</base-button
-            >
+            <base-button
+              action="confirm"
+              variant="plain"
+              @click="actTodo"
+            ></base-button>
             <base-button
               action="cancel"
               variant="plain"
               @click="closeDeleteModal"
-              >취소</base-button
-            >
+            ></base-button>
           </div>
         </v-row>
       </v-container>
@@ -70,13 +62,17 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
-import { ref, toRaw, onMounted } from "vue";
+import { ref, toRaw, onMounted, inject, computed } from "vue";
 import api from "@/plugins/axios";
+
+const setMessage = inject("setMessage");
+
+const props = defineProps({
+  setMessage: Function,
+});
 
 const todos = ref([]);
 const checkedTodos = ref([]);
-const returnMessage = ref("");
-const messageType = ref("");
 const confirmDeleteModal = ref(false);
 const deleteFlag = ref(false);
 const restoreFlag = ref(false);
@@ -97,11 +93,10 @@ const fetchTodos = async () => {
     if (response.success) {
       todos.value = response.data;
     } else {
-      returnMessage.value = response.message;
+      setMessage(response.message, "error");
     }
   } catch (error) {
     console.error("Error fetching todos:", error);
-    returnMessage.value = "할일 목록을 불러오는 데 실패했습니다.";
   }
 };
 
@@ -128,38 +123,28 @@ const actTodo = async () => {
   if (deleteFlag.value) {
     // 할일 삭제
     response = await api.delete("/todos/many", { data: param });
+
+    deleteFlag.value = false;
   } else if (restoreFlag.value) {
     // 할일 복구
     response = await api.put("/todos/not_completed", param);
+
+    restoreFlag.value = false;
   }
+
+  const status = response.success ? "success" : "error";
+  setMessage(response.message, status);
 
   if (response.success) {
-    returnMessage.value = response.message;
-    messageType.value = "success";
-
     // 삭제/복구 후 목록을 다시 불러오기
     await fetchTodos();
-  } else {
-    returnMessage.value = response.message;
-    messageType.value = "error";
   }
-
-  setTimeout(() => {
-    returnMessage.value = "";
-    messageType.value = "";
-  }, 2000);
 
   confirmDeleteModal.value = false;
 };
 </script>
 
 <style scoped>
-.messageAlert {
-  position: absolute;
-  bottom: 13vh;
-  width: 80%;
-}
-
 .spanText {
   white-space: pre-line;
 }

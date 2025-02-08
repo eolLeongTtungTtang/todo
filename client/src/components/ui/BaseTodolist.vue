@@ -19,6 +19,7 @@
           :label="todo.title"
           v-model="checkedTodos"
           :value="todo.todoId"
+          @click="route.path === '/completed' ? '' : completeTodo(todo.todoId)"
         >
           <template #label>
             <v-label
@@ -51,10 +52,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, inject } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
+import api from "@/plugins/axios";
+
+const setMessage = inject("setMessage");
 
 // Props 정의
 const props = defineProps({
@@ -123,6 +127,21 @@ watch(
 watch(checkedTodos, (newCheckedTodos) => {
   emit("update:modelValue", newCheckedTodos);
 });
+
+// 투두 완료처리
+const completeTodo = async (id) => {
+  console.log("id: ", id);
+  try {
+    const response = await api.put(`/todos/${id}/complete`);
+
+    todos.value = todos.value.filter((todo) => todo.todoId !== id);
+
+    const status = response.success ? "success" : "error";
+    setMessage(response.message, status);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 // 레이블 더블 클릭 시 모달 열기
 const handleDoubleClick = (todo) => {

@@ -17,9 +17,11 @@ import BaseDivider from "@/components/ui/BaseDivider.vue";
 import CalenderButton from "@/components/CalenderButton.vue";
 import CompAndTagButton from "@/components/CompAndTagButton.vue";
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import { useRoute } from "vue-router";
 import api from "@/plugins/axios";
+
+const setMessage = inject("setMessage");
 
 const route = useRoute();
 const todos = ref([]);
@@ -32,7 +34,7 @@ onMounted(async () => {
     todos.value = response.data;
     count.value = todos.value.length;
   } else {
-    errorMsg.value = response.message;
+    setMessage(response.message, "error");
   }
 });
 </script>

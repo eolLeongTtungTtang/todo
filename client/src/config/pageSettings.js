@@ -22,3 +22,17 @@ export const todoListSettings = {
   },
   "/tags": {},
 };
+
+export const alertSettings = {
+  "/": {
+    locate: "37vh",
+  },
+  "/all-todos": {},
+  "/calender": {
+    locate: "26vh",
+  },
+  "/completed": {
+    locate: "23vh",
+  },
+  "/tags": {},
+};
