@@ -26,15 +26,13 @@ const todos = ref([]);
 const count = ref(0); // todo 개수
 
 onMounted(async () => {
-  if (route.path === "/") {
-    const response = await api.get("/todos");
+  const response = await api.get("/todos");
 
-    if (response.success) {
-      todos.value = response.data;
-      count.value = todos.value.length;
-    } else {
-      errorMsg.value = response.message;
-    }
+  if (response.success) {
+    todos.value = response.data;
+    count.value = todos.value.length;
+  } else {
+    errorMsg.value = response.message;
   }
 });
 </script>

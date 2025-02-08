@@ -17,9 +17,15 @@
           :key="todo.todoId"
           hide-details="false"
           :label="todo.title"
+          v-model="checkedTodos"
+          :value="todo.todoId"
         >
           <template #label>
-            <v-label @dblclick="handleDoubleClick(todo)">
+            <v-label
+              @dblclick="
+                route.path !== '/completed' ? handleDoubleClick(todo) : ''
+              "
+            >
               {{ todo.title }}
             </v-label>
           </template>
@@ -35,7 +41,7 @@
   ></base-todo-modal>
 
   <v-container
-    v-if="!todos"
+    v-if="!todos || todos.length === 0"
     fluid
     class="emptyDiv"
     :style="{ height: listHeight }"
@@ -45,19 +51,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
 
 const route = useRoute();
 
+const props = defineProps({
+  todos: Array,
+  modelValue: Array,
+  selectAll: Boolean,
+});
+
+const emit = defineEmits(["close", "update:modelValue"]);
+
 const todos = ref([]); // todo Array
 const todoModal = ref(false); // 할 일 수정 및 삭제 모달
-
-const props = defineProps(["todos"]);
-
-const emit = defineEmits(["close"]);
+const checkedTodos = ref([...props.modelValue]);
 
 watch(
   () => props.todos,
@@ -66,6 +77,26 @@ watch(
   },
   { immediate: true }
 );
+
+// 전체선택 watch
+watch(
+  () => props.selectAll,
+  (selectedAll) => {
+    if (selectedAll) {
+      // Set을 활용하여 중복 제거
+      checkedTodos.value = [...new Set(todos.value.map((todo) => todo.todoId))];
+    } else {
+      checkedTodos.value = [];
+    }
+  },
+  { immediate: true }
+);
+
+watch(checkedTodos, (newCheckedTodos) => {
+  emit("update:modelValue", newCheckedTodos);
+});
+
+/* 낱개로 전체 선택 시 '전체선택'으로 completed.vue 문구 변경 필요  */
 
 // 페이지 별 투두 리스트 height
 const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);

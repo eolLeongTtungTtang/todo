@@ -1,25 +1,40 @@
 <template>
-  <template v-if="todoExist">
+  <template v-if="todos && todos.length > 0">
     <v-btn class="selectAllBtn" variant="plain" @click="clickSelectAll">{{
       selectText
     }}</v-btn>
   </template>
 
-  <base-todolist @existence="updateTodoExist"></base-todolist>
+  <base-todolist
+    :todos="todos"
+    :selectAll="selectAll"
+    v-model="checkedTodos"
+  ></base-todolist>
 
-  <template v-if="todoExist">
+  <template v-if="returnMessage">
+    <v-alert
+      class="messageAlert"
+      :text="returnMessage"
+      :type="messageType"
+      variant="tonal"
+    ></v-alert>
+  </template>
+
+  <template v-if="todos && todos.length > 0">
     <div class="buttonDiv">
       <base-button
         variant="plain"
         action="delete"
         @click="(confirmDeleteModal = true), (deleteFlag = true)"
         @click:outside="closeDeleteModal"
+        :disabled="checkedTodos.length === 0"
       ></base-button>
       <base-button
         variant="plain"
         action="restore"
         @click="(confirmDeleteModal = true), (restoreFlag = true)"
         @click:outside="closeDeleteModal"
+        :disabled="checkedTodos.length === 0"
       ></base-button>
     </div>
 
@@ -34,6 +49,7 @@
             <span class="spanText" v-if="deleteFlag">{{ deleteText }}</span>
             <span class="spanText" v-if="restoreFlag">{{ restoreText }}</span>
           </div>
+
           <div class="confirmBtn">
             <base-button action="confirm" variant="plain" @click="actTodo"
               >확인</base-button
@@ -54,54 +70,96 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
-import { ref, watch, computed } from "vue";
+import { ref, toRaw, onMounted } from "vue";
+import api from "@/plugins/axios";
 
-let todoExist = ref(false);
+const todos = ref([]);
+const checkedTodos = ref([]);
+const returnMessage = ref("");
+const messageType = ref("");
+const confirmDeleteModal = ref(false);
+const deleteFlag = ref(false);
+const restoreFlag = ref(false);
+const selectAll = ref(false);
+const selectText = ref("전체선택");
 
-const updateTodoExist = (exist) => {
-  todoExist.value = exist;
+const deleteText = `선택항목을 삭제합니다.\n삭제된 항목은 복구할 수 없습니다.`;
+const restoreText = "선택항목을 복구합니다.";
+
+onMounted(async () => {
+  await fetchTodos();
+});
+
+// 할일 목록을 불러오는 함수
+const fetchTodos = async () => {
+  try {
+    const response = await api.get("/todos/completed");
+    if (response.success) {
+      todos.value = response.data;
+    } else {
+      returnMessage.value = response.message;
+    }
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    returnMessage.value = "할일 목록을 불러오는 데 실패했습니다.";
+  }
 };
 
-let selectAll = ref(false);
-let selectText = ref("전체선택");
-// base-todolist에 props로 전체 선택 전달 해야함
+// 전체 선택 토글
 const clickSelectAll = () => {
   selectAll.value = !selectAll.value;
   selectText.value = selectAll.value ? "전체해제" : "전체선택";
 };
 
-const deleteFlag = ref(false);
-const restoreFlag = ref(false);
-
-watch(deleteFlag, () => console.log("deleteFlag", deleteFlag.value));
-watch(restoreFlag, () => console.log("restoreFlag", restoreFlag.value));
-
+// 삭제/복구 모달 닫기
 const closeDeleteModal = () => {
   deleteFlag.value = false;
   restoreFlag.value = false;
   confirmDeleteModal.value = false;
 };
 
-const deleteText = `선택항목을 삭제합니다.\n삭제된 항목은 복구할 수 없습니다.`;
-const restoreText = "선택항목을 복구합니다.";
+// 할일 삭제 및 복구 처리
+const actTodo = async () => {
+  const param = {
+    ids: toRaw(checkedTodos.value),
+  };
 
-// TODO 삭제
-let confirmDeleteModal = ref(false);
-
-const actTodo = () => {
-  if (deleteFlag) {
-    // 할일 삭제 api 호출
+  let response;
+  if (deleteFlag.value) {
+    // 할일 삭제
+    response = await api.delete("/todos/many", { data: param });
+  } else if (restoreFlag.value) {
+    // 할일 복구
+    response = await api.put("/todos/not_completed", param);
   }
 
-  if (restoreFlag) {
-    // 할일 복구 api 호출
+  if (response.success) {
+    returnMessage.value = response.message;
+    messageType.value = "success";
+
+    // 삭제/복구 후 목록을 다시 불러오기
+    await fetchTodos();
+  } else {
+    returnMessage.value = response.message;
+    messageType.value = "error";
   }
 
-  confirmDeleteModal = false;
+  setTimeout(() => {
+    returnMessage.value = "";
+    messageType.value = "";
+  }, 2000);
+
+  confirmDeleteModal.value = false;
 };
 </script>
 
 <style scoped>
+.messageAlert {
+  position: absolute;
+  bottom: 13vh;
+  width: 80%;
+}
+
 .spanText {
   white-space: pre-line;
 }
