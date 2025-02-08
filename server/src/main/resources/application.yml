@@ -1,8 +1,10 @@
+server:
+  port: 8081
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/todo?useSSL=false&serverTimezone=UTC
     username: root
-    password: wjsdofla
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 springdoc:
   swagger-ui:

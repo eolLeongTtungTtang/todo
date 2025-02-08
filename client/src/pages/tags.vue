@@ -1,20 +1,20 @@
 <template>
   <v-expansion-panels flat v-model="panel">
-    <v-expansion-panel v-for="(title, index) in tagArr" :key="index">
+    <v-expansion-panel v-for="(todo, tag, index) in todos" :key="index">
       <v-expansion-panel-title>
-        <span class="titleText"># {{ title.tag }}</span>
-        <span class="greyText">&nbsp;&nbsp;+{{ title.maxTodoId }}</span>
+        <span class="titleText"># {{ tag }}</span>
+        <span class="greyText">&nbsp;&nbsp;+{{ todo.length }}</span>
         <template v-slot:actions="{ expanded }">
           <span class="toggleText">{{ expanded ? "닫기" : "펼치기" }}</span>
         </template>
       </v-expansion-panel-title>
 
       <v-expansion-panel-text class="panelText">
-        <base-todolist />
+        <base-todolist :todos="todo" />
       </v-expansion-panel-text>
 
       <base-divider
-        v-if="tagArr.length - 1 !== index"
+        v-if="index !== todosLength - 1"
         thickness="1"
         divider-margin="0"
       />
@@ -25,20 +25,22 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
-import { ref } from "vue";
-import todoByTagTest from "../data/todoByTagTest.json";
+import { ref, onMounted } from "vue";
+import api from "@/plugins/axios";
 
 let panel = ref(null);
+const todos = ref({});
+const todosLength = ref(0);
 
-// 태그
-const tagArr = Object.entries(todoByTagTest).map(([tag, todoList]) => {
-  // reduce를 사용하여 최대 todo_id 값을 찾기
-  const maxTodoId = todoList.reduce(
-    (max, todo) => Math.max(max, todo.todo_id),
-    -Infinity
-  );
+onMounted(async () => {
+  const response = await api.get("/todos/tag");
 
-  return { tag, maxTodoId };
+  if (response.success) {
+    todos.value = response.data;
+    todosLength.value = Object.entries(todos.value).length;
+  } else {
+    errorMsg.value = response.message;
+  }
 });
 </script>
 

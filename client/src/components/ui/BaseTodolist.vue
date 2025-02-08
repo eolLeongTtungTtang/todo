@@ -1,8 +1,6 @@
 <template>
-  <base-todo-summary v-if="route.path === '/'" :todoCount="count" />
-
   <v-container
-    v-if="todos.length > 0"
+    v-if="todos && todos.length > 0"
     fluid
     class="d-flex justify-center"
     :style="{ height: listHeight }"
@@ -37,7 +35,7 @@
   ></base-todo-modal>
 
   <v-container
-    v-if="todos.length === 0"
+    v-if="!todos"
     fluid
     class="emptyDiv"
     :style="{ height: listHeight }"
@@ -51,33 +49,23 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
 import BaseTodoModal from "./BaseTodoModal.vue";
-import BaseTodoSummary from "./BaseTodoSummary.vue";
-import api from "@/plugins/axios";
 
 const route = useRoute();
 
 const todos = ref([]); // todo Array
-const errorMsg = ref(""); // 에러 메세지
-const count = ref(todos.value.length); // todo 개수
 const todoModal = ref(false); // 할 일 수정 및 삭제 모달
 
-const emit = defineEmits(["existence", "close"]);
+const props = defineProps(["todos"]);
 
-watch(todos, (newTodos) => {
-  count.value = newTodos.length;
-});
+const emit = defineEmits(["close"]);
 
-onMounted(async () => {
-  const response = await api.get("/todos");
-
-  if (response.success) {
-    todos.value = response.data;
-  } else {
-    errorMsg.value = response.message;
-  }
-
-  emit("existence", todos.value.length > 0);
-});
+watch(
+  () => props.todos,
+  (newTodos) => {
+    todos.value = newTodos;
+  },
+  { immediate: true }
+);
 
 // 페이지 별 투두 리스트 height
 const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
