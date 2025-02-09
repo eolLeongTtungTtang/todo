@@ -43,7 +43,7 @@ const setMessage = (message, type) => {
 provide("setMessage", setMessage);
 
 const alertLocation = computed(() => {
-  return alertSettings[route.path].locate;
+  return alertSettings[route.path].locate || "23vh";
 });
 </script>
 

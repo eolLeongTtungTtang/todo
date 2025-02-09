@@ -29,10 +29,8 @@ export const alertSettings = {
   },
   "/all-todos": {},
   "/calender": {
-    locate: "26vh",
+    locate: "13vh",
   },
-  "/completed": {
-    locate: "23vh",
-  },
+  "/completed": {},
   "/tags": {},
 };
