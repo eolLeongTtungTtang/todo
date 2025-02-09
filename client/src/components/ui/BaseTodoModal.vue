@@ -298,11 +298,26 @@ watch(selectedTime, (newTime) => {
 });
 
 // TODO 추가
-const addTodo = () => {
+const addTodo = async () => {
   // 할일 추가 api 호출
-  messageStatus(response);
+  const editTodo = toRaw(copyTodo);
 
-  resetModalData();
+  const param = {
+    title: editTodo.title,
+    memo: editTodo.memo,
+    dueDate: selectedDate.value,
+    dueTime: selectedTime.value,
+    priority: editTodo.priority,
+    tag: editTodo.tag,
+  };
+  console.log(param);
+  try {
+    const response = await api.post("/todos", param);
+
+    emit("reload", response);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 // TODO 추가 취소
