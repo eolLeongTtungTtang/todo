@@ -1,13 +1,18 @@
 <template>
-  <v-dialog width="90%" height="85%">
+  <v-dialog width="90%" height="85%" persistent>
     <v-card
       max-width="100%"
       max-height="100%"
       :title="modalTitle"
       class="outlined-dialog"
     >
+      <v-btn icon @click="resetModalData" class="close-btn">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
       <v-container class="inputContainer">
+        <!-- 할 일 제목 -->
         <v-text-field
+          v-model="copyTodo.title"
           hide-details
           class="inputTodo"
           density="compact"
@@ -18,11 +23,15 @@
         <base-divider thickness="1" />
 
         <div class="dateAndTimeDiv">
+          <!-- 날짜 선택 -->
           <button class="dateAndTimeSelector" @click="openCalender">
-            <span>{{ formattedDate }}&nbsp</span>
+            <span
+              >{{ formattedDate(selectedDate) || copyTodo.dueDate }}&nbsp</span
+            >
             <v-icon size="sm">mdi-calendar-today-outline</v-icon>
           </button>
-          <!-- 캘린더 모달 -->
+
+          <!-- 날짜 선택 모달 -->
           <v-dialog v-model="calenderModal">
             <v-locale-provider locale="ko">
               <v-date-picker
@@ -33,16 +42,20 @@
             </v-locale-provider>
           </v-dialog>
 
+          <!-- 시간 선택 -->
           <button class="dateAndTimeSelector" @click="openTimePicker">
-            <template v-if="selectedTime">
-              <span>{{ selectedTime }}&nbsp</span
-              ><v-icon size="sm">mdi-archive-clock-outline</v-icon>
+            <template v-if="selectedTime || copyTodo.dueTime">
+              <span
+                >{{ selectedTime || copyTodo.dueTime.slice(0, -3) }}&nbsp</span
+              >
+              <v-icon size="sm">mdi-archive-clock-outline</v-icon>
             </template>
-            <template v-else
-              ><span>하루종일&nbsp</span
-              ><v-icon size="sm">mdi-all-inclusive</v-icon></template
-            >
+            <template v-else>
+              <span>하루종일&nbsp</span>
+              <v-icon size="sm">mdi-all-inclusive</v-icon>
+            </template>
           </button>
+
           <!-- 시간 선택 모달 -->
           <v-dialog v-model="timePickerModal">
             <v-container>
@@ -76,6 +89,7 @@
 
         <p class="spanTitle">메모</p>
         <v-textarea
+          v-model="copyTodo.memo"
           class="inputMemo"
           hide-details
           density="compact"
@@ -86,7 +100,7 @@
         <base-divider thickness="1" />
 
         <span class="spanTitle">중요도</span>
-        <v-radio-group v-model="selectedPriority" inline hide-details>
+        <v-radio-group v-model="copyTodo.priority" inline hide-details>
           <v-radio
             v-for="(radio, index) in radioOptions"
             :key="index"
@@ -100,9 +114,16 @@
       </v-container>
 
       <v-container class="btnContent">
-        <v-btn variant="plain" class="tagBtn" v-for="tag in tagArr"
-          ># {{ tag }}</v-btn
+        <v-btn
+          v-model="copyTodo.tag"
+          :class="['tagBtn', { selected: copyTodo.tag === tag }]"
+          variant="plain"
+          @click="selectTag(tag)"
+          v-for="tag in tagArr"
+          :key="tag"
         >
+          # {{ tag }}
+        </v-btn>
       </v-container>
 
       <template v-slot:actions>
@@ -134,6 +155,7 @@
         </div>
       </template>
 
+      <!-- 삭제 모달 -->
       <v-dialog
         v-model="confirmDeleteModal"
         @click:outside="confirmDeleteModal = false"
@@ -167,33 +189,71 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, reactive } from "vue";
+
+const emit = defineEmits(["close"]);
 
 const props = defineProps({
   mode: String,
+  todo: Object,
 });
 
-const mode = props.mode;
+const copyTodo = reactive({
+  ...props.todo,
+});
+
+// props.todo가 변경될 때마다 copyTodo 업데이트
+watch(
+  () => props.todo,
+  (newTodo) => {
+    Object.assign(copyTodo, newTodo);
+  }
+);
+
+// TODO 삭제 확인 모달
+let confirmDeleteModal = ref(false);
+
+// 모드에 따른 제목 설정
+const mode = computed(() => props.mode);
 
 const modalType = {
-  add: {
-    title: "추가",
-  },
-  edit: {
-    title: "수정",
-  },
+  add: { title: "추가" },
+  edit: { title: "수정" },
 };
 
-const modalTitle = ref("할 일 " + modalType[mode].title);
+const modalTitle = computed(() => {
+  return `할 일 ${modalType[mode.value]?.title}` || "";
+});
 
-const selectedPriority = ref(null);
+watch(
+  () => mode.value,
+  (newMode) => {
+    if (newMode === "add") {
+      copyTodo.title = "";
+      copyTodo.memo = "";
+      copyTodo.dueDate = "";
+      copyTodo.dueTime = "";
+      copyTodo.priority = null;
+      copyTodo.isCompleted = false;
+      copyTodo.tag = null;
+    }
+  },
+  { immediate: true } // 초기화 시점에 즉시 실행
+);
+
+// 중요도
 const radioOptions = [
   { priority: 1, color: "red", class: "radio-red" },
   { priority: 2, color: "blue", class: "radio-blue" },
   { priority: 3, color: "yellow", class: "radio-yellow" },
 ];
 
+// 태그
 const tagArr = ["자택", "학교", "직장", "기타"];
+
+const selectTag = (tag) => {
+  copyTodo.tag = tag;
+};
 
 // 캘린더 모달
 const calenderModal = ref(false);
@@ -205,16 +265,17 @@ const openCalender = () => {
 const selectedDate = ref(new Date());
 
 // 날짜 포맷
-const formattedDate = computed(() => {
-  const date = new Date(selectedDate.value);
+const formattedDate = (pickedDate) => {
+  const date = new Date(pickedDate);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-});
+};
 
 // 날짜 변경 시 모달 닫기
 watch(selectedDate, (newDate) => {
+  selectedDate.value = newDate;
   calenderModal.value = false;
 });
 
@@ -228,12 +289,14 @@ const openTimePicker = () => {
 };
 
 // 시간 선택 완료 시 모달 닫기
-watch(selectedDate, (newTime) => {
+watch(selectedTime, (newTime) => {
+  selectedTime.value = newTime;
+  console.log(selectedTime.value);
   timePickerModal.value = false;
 });
 
 // TODO 추가
-const addTodo = (data) => {
+const addTodo = () => {
   // 할일 추가 api 호출
   resetModalData();
 };
@@ -249,25 +312,44 @@ const editTodo = () => {
   resetModalData();
 };
 
-// TODO 삭제
-let confirmDeleteModal = ref(false);
-
 const deleteTodo = () => {
   // 할일 삭제 api 호출
   confirmDeleteModal.value = false;
   resetModalData();
 };
 
-const emit = defineEmits(["close"]);
-
+// 데이터 초기화
 const resetModalData = () => {
-  selectedDate.value = new Date();
-  selectedTime.value = null;
+  // props.todo가 null 또는 undefined인 경우 처리
+  if (props.todo) {
+    Object.assign(copyTodo, { ...props.todo });
+  } else {
+    // props.todo가 유효하지 않으면 빈 객체로 초기화
+    Object.assign(copyTodo, {});
+  }
   emit("close");
 };
 </script>
 
 <style scoped>
+.selected {
+  background-color: #3f9e7f !important;
+  color: white !important;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  color: #000;
+  box-shadow: none !important;
+}
+
+.close-btn .v-icon {
+  font-size: 24px;
+}
+
 .dateAndTimeDiv {
   display: flex;
   font-size: 14px;

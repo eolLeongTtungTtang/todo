@@ -47,12 +47,6 @@
     </v-row>
   </v-container>
 
-  <base-todo-modal
-    v-model="todoModal"
-    mode="edit"
-    @close="closeTodoModal"
-  ></base-todo-modal>
-
   <v-container
     v-if="!todos || todos.length === 0"
     fluid
@@ -67,10 +61,10 @@
 import { ref, computed, watch, onMounted, inject } from "vue";
 import { useRoute } from "vue-router";
 import { todoListSettings } from "@/config/pageSettings";
-import BaseTodoModal from "./BaseTodoModal.vue";
 import api from "@/plugins/axios";
 
 const setMessage = inject("setMessage");
+const todoModal = inject("todoModal");
 
 // Props 정의
 const props = defineProps({
@@ -80,13 +74,12 @@ const props = defineProps({
 });
 
 // Emit 정의
-const emit = defineEmits(["close", "update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 // 상태 변수
 const route = useRoute();
 const todos = ref([]); // todo Array
 const checkedTodos = ref([]); // 체크된 todo 배열
-const todoModal = ref(false); // 할 일 수정 및 삭제 모달
 
 const getPriorityClass = (priority) => {
   switch (priority) {
@@ -169,17 +162,7 @@ const completeTodo = async (id) => {
 
 // 레이블 더블 클릭 시 모달 열기
 const handleDoubleClick = (todo) => {
-  todoModal.value = true;
-};
-
-// 모달 닫기
-const closeTodoModal = () => {
-  todoModal.value = false;
-};
-
-// 모달 데이터 초기화 및 emit
-const resetModalData = () => {
-  emit("close");
+  todoModal(true, "edit", todo);
 };
 </script>
 

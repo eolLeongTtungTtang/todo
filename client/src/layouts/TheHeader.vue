@@ -17,7 +17,7 @@
       </template>
 
       <v-btn
-        @click="todoModal = true"
+        @click="openAddTodoModal"
         :style="{
           visibility: addbtnShow,
         }"
@@ -26,34 +26,27 @@
         elevation="0"
         size="x-large"
       ></v-btn>
-
-      <base-todo-modal
-        v-model="todoModal"
-        mode="add"
-        @close="closeTodoModal"
-      ></base-todo-modal>
     </div>
   </v-container>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { headerSettings } from "@/config/pageSettings";
-import BaseTodoModal from "@/components/ui/BaseTodoModal.vue";
+
+const todoModal = inject("todoModal");
 
 let route = useRoute();
 let router = useRouter();
-const todoModal = ref(false);
-
-// 모달 닫기
-const closeTodoModal = () => {
-  todoModal.value = false;
-};
 
 // 뒤로가기
 const goBack = () => {
   router.go(-1);
+};
+
+const openAddTodoModal = () => {
+  todoModal(true, "add");
 };
 
 // 페이지 별 헤더 아이콘 및 배경색 설정

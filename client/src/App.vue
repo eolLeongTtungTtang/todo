@@ -15,12 +15,22 @@
           variant="tonal"
         ></v-alert>
       </teleport>
+      <teleport to="body">
+        <base-todo-modal
+          v-model="openModal"
+          class="todoModal"
+          :mode="mode"
+          :todo="todo"
+          @close="closeModal"
+        ></base-todo-modal>
+      </teleport>
     </v-main>
   </v-app>
 </template>
 
 <script setup>
 import TheHeader from "./layouts/TheHeader.vue";
+import BaseTodoModal from "./components/ui/BaseTodoModal.vue";
 import { alertSettings } from "./config/pageSettings";
 import { useRoute } from "vue-router";
 import { ref, provide, computed } from "vue";
@@ -29,6 +39,9 @@ const route = useRoute();
 
 const returnMessage = ref("");
 const messageType = ref("");
+const openModal = ref(false);
+const mode = ref("");
+const todo = ref({});
 
 const setMessage = (message, type) => {
   returnMessage.value = message;
@@ -40,7 +53,19 @@ const setMessage = (message, type) => {
   }, 2000);
 };
 
+const todoModal = (open, modalMode, todoValue = {}) => {
+  openModal.value = open;
+  mode.value = modalMode || "add";
+  todo.value = todoValue;
+};
+
+// 모달 데이터 초기화 및 emit
+const closeModal = () => {
+  openModal.value = false;
+};
+
 provide("setMessage", setMessage);
+provide("todoModal", todoModal);
 
 const alertLocation = computed(() => {
   return alertSettings[route.path].locate || "23vh";
@@ -69,4 +94,17 @@ body {
   z-index: 9999;
   width: 80%;
 }
+
+// .todoModal {
+//   position: fixed;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   z-index: 9999;
+//   width: 80%;
+//   bottom: 20vh;
+//   background-color: white;
+//   border-radius: 8px;
+//   padding: 20px;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+// }
 </style>
