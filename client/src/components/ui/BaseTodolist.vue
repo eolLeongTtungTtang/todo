@@ -19,6 +19,7 @@
           :label="todo.title"
           v-model="checkedTodos"
           :value="todo.todoId"
+          :class="getPriorityClass(todo.priority)"
           @click="route.path === '/completed' ? '' : completeTodo(todo.todoId)"
         >
           <template #label>
@@ -86,6 +87,19 @@ const route = useRoute();
 const todos = ref([]); // todo Array
 const checkedTodos = ref([]); // 체크된 todo 배열
 const todoModal = ref(false); // 할 일 수정 및 삭제 모달
+
+const getPriorityClass = (priority) => {
+  switch (priority) {
+    case 1:
+      return "checkbox-red"; // 빨간색 우선순위
+    case 2:
+      return "checkbox-blue"; // 파란색 우선순위
+    case 3:
+      return "checkbox-yellow"; // 노란색 우선순위
+    default:
+      return "";
+  }
+};
 
 // 페이지 별 todo 리스트의 height
 const listHeight = computed(() => todoListSettings[route.path]?.todoListHeight);
@@ -170,6 +184,28 @@ const resetModalData = () => {
 </script>
 
 <style scoped>
+/* 체크박스 아이콘의 색상 설정 */
+::v-deep .checkbox-red .v-selection-control__input > .v-icon {
+  background-color: red !important;
+  border-radius: 20%;
+}
+
+::v-deep .checkbox-blue .v-selection-control__input > .v-icon {
+  background-color: blue !important;
+  border-radius: 20%;
+}
+
+::v-deep .checkbox-yellow .v-selection-control__input > .v-icon {
+  background-color: yellow !important;
+  border-radius: 20%;
+}
+
+/* 기본 상태에서 색상 */
+::v-deep .v-selection-control__input > .v-icon {
+  color: grey !important; /* 기본 색상 */
+  opacity: var(--v-medium-emphasis-opacity) !important;
+}
+
 ::v-deep .v-selection-control .v-label {
   white-space: normal;
   word-break: break-word;
