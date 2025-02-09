@@ -22,6 +22,7 @@
           :mode="mode"
           :todo="todo"
           @close="closeModal"
+          @reload="reloadData(response)"
         ></base-todo-modal>
       </teleport>
     </v-main>
@@ -64,6 +65,12 @@ const closeModal = () => {
   openModal.value = false;
 };
 
+const reloadData = (response) => {
+  location.reload();
+  // const status = response.success ? "success" : "error";
+  // setMessage(response.message, status);
+};
+
 provide("setMessage", setMessage);
 provide("todoModal", todoModal);
 
@@ -94,17 +101,4 @@ body {
   z-index: 9999;
   width: 80%;
 }
-
-// .todoModal {
-//   position: fixed;
-//   left: 50%;
-//   transform: translateX(-50%);
-//   z-index: 9999;
-//   width: 80%;
-//   bottom: 20vh;
-//   background-color: white;
-//   border-radius: 8px;
-//   padding: 20px;
-//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-// }
 </style>

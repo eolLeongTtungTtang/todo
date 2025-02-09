@@ -189,9 +189,11 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed, reactive } from "vue";
+import { ref, watch, computed, reactive, inject } from "vue";
+import api from "@/plugins/axios";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "reload"]);
+const setMessage = inject("setMessage");
 
 const props = defineProps({
   mode: String,
@@ -298,24 +300,35 @@ watch(selectedTime, (newTime) => {
 // TODO 추가
 const addTodo = () => {
   // 할일 추가 api 호출
+  messageStatus(response);
+
   resetModalData();
 };
 
 // TODO 추가 취소
 const cancelTodo = () => {
-  resetModalData();
+  emit("close");
 };
 
 // TODO 수정
 const editTodo = () => {
   // 할일 update api 호출
+  messageStatus(response);
+
   resetModalData();
 };
 
-const deleteTodo = () => {
+const deleteTodo = async () => {
   // 할일 삭제 api 호출
-  confirmDeleteModal.value = false;
-  resetModalData();
+  try {
+    const response = await api.delete(`/todos/${props.todo.todoId}`);
+
+    confirmDeleteModal.value = false;
+    resetModalData();
+    emit("reload", response);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 // 데이터 초기화
