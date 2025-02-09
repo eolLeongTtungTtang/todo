@@ -6,7 +6,7 @@
       :title="modalTitle"
       class="outlined-dialog"
     >
-      <v-btn icon @click="resetModalData" class="close-btn">
+      <v-btn icon @click="$emit('reload')" class="close-btn">
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-container class="inputContainer">
@@ -189,7 +189,7 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed, reactive, inject } from "vue";
+import { ref, watch, computed, reactive, inject, toRaw } from "vue";
 import api from "@/plugins/axios";
 
 const emit = defineEmits(["close", "reload"]);
@@ -307,15 +307,30 @@ const addTodo = () => {
 
 // TODO 추가 취소
 const cancelTodo = () => {
+  emit("reload");
   emit("close");
 };
 
 // TODO 수정
-const editTodo = () => {
+const editTodo = async () => {
   // 할일 update api 호출
-  messageStatus(response);
+  const editTodo = toRaw(copyTodo);
+  const param = {
+    title: editTodo.title,
+    memo: editTodo.memo,
+    dueDate: editTodo.dueDate,
+    dueTime: editTodo.dueTime,
+    priority: editTodo.priority,
+    tag: editTodo.tag,
+  };
+  try {
+    const response = await api.put(`/todos/${editTodo.todoId}`, param);
 
-  resetModalData();
+    confirmDeleteModal.value = false;
+    emit("reload", response);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const deleteTodo = async () => {
@@ -324,23 +339,10 @@ const deleteTodo = async () => {
     const response = await api.delete(`/todos/${props.todo.todoId}`);
 
     confirmDeleteModal.value = false;
-    resetModalData();
     emit("reload", response);
   } catch (e) {
     console.log(e);
   }
-};
-
-// 데이터 초기화
-const resetModalData = () => {
-  // props.todo가 null 또는 undefined인 경우 처리
-  if (props.todo) {
-    Object.assign(copyTodo, { ...props.todo });
-  } else {
-    // props.todo가 유효하지 않으면 빈 객체로 초기화
-    Object.assign(copyTodo, {});
-  }
-  emit("close");
 };
 </script>
 
