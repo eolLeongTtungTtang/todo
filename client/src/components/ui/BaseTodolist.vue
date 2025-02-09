@@ -28,6 +28,17 @@
               "
             >
               {{ todo.title }}
+              <span
+                class="spanTime"
+                v-if="
+                  route.path === '/all-todos' ||
+                  route.path === '/completed' ||
+                  route.path === '/calender'
+                "
+                @click.stop
+              >
+                {{ todo.dueTime ? todo.dueTime.slice(0, -3) : "하루종일" }}
+              </span>
             </v-label>
           </template>
         </v-checkbox>
@@ -130,7 +141,6 @@ watch(checkedTodos, (newCheckedTodos) => {
 
 // 투두 완료처리
 const completeTodo = async (id) => {
-  console.log("id: ", id);
   try {
     const response = await api.put(`/todos/${id}/complete`);
 
@@ -160,6 +170,22 @@ const resetModalData = () => {
 </script>
 
 <style scoped>
+::v-deep .v-selection-control .v-label {
+  white-space: normal;
+  word-break: break-word;
+  height: 100%;
+  opacity: 1;
+  width: 100% !important;
+  justify-content: space-between !important;
+}
+
+.spanTime {
+  width: 10vh;
+  text-align: right;
+  font-size: 14px;
+  color: grey;
+}
+
 .emptyDiv {
   display: flex;
   justify-content: center;

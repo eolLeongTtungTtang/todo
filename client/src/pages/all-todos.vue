@@ -2,7 +2,7 @@
   <v-expansion-panels flat v-model="panel">
     <v-expansion-panel title="지난 할 일">
       <v-expansion-panel-text>
-        <base-todolist />
+        <base-todolist :todos="todosLast" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -12,7 +12,7 @@
   <v-expansion-panels flat>
     <v-expansion-panel title="오늘 할 일">
       <v-expansion-panel-text>
-        <base-todolist />
+        <base-todolist :todos="todosToday" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -21,11 +21,32 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, inject } from "vue";
+import api from "@/plugins/axios";
 
 let panel = ref(null);
+const todosToday = ref([]);
+const todosLast = ref([]);
+
+const setMessage = inject("setMessage");
+
 let dividerFlag = computed(() => {
   return typeof panel.value !== "number";
+});
+
+onMounted(async () => {
+  try {
+    const response = await api.get("/todos/last");
+
+    if (response.success) {
+      todosToday.value = response.data.today;
+      todosLast.value = response.data.last;
+    } else {
+      setMessage(response.message, "error");
+    }
+  } catch (e) {
+    console.log(e);
+  }
 });
 </script>
 
