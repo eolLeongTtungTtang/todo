@@ -1,5 +1,5 @@
 <template>
-  <v-dialog width="90%" height="85%" persistent>
+  <v-dialog min-width="80%" min-height="85%" persistent>
     <v-card
       max-width="100%"
       max-height="100%"
@@ -10,107 +10,52 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-container class="inputContainer">
-        <!-- 할 일 제목 -->
-        <v-text-field
-          v-model="copyTodo.title"
-          hide-details
-          class="inputTodo"
-          density="compact"
-          placeholder="할 일을 입력해 주세요."
-          variant="outlined"
-        ></v-text-field>
+        <!-- 폼 감싸기 -->
+        <v-form ref="form" v-model="isValid">
+          <!-- 할 일 제목 -->
+          <v-text-field
+            v-model="copyTodo.title"
+            hide-details="auto"
+            class="inputTodo"
+            density="compact"
+            placeholder="할 일을 입력해 주세요."
+            variant="outlined"
+            :rules="[() => !!copyTodo.title || '할 일을 입력해 주세요.']"
+            required
+          ></v-text-field>
 
-        <base-divider thickness="1" />
+          <base-divider thickness="1" />
 
-        <div class="dateAndTimeDiv">
-          <!-- 날짜 선택 -->
-          <button class="dateAndTimeSelector" @click="openCalender">
-            <span
-              >{{ formattedDate(selectedDate) || copyTodo.dueDate }}&nbsp</span
-            >
-            <v-icon size="sm">mdi-calendar-today-outline</v-icon>
-          </button>
+          <!-- 날짜와 시간 선택 등... -->
 
-          <!-- 날짜 선택 모달 -->
-          <v-dialog v-model="calenderModal">
-            <v-locale-provider locale="ko">
-              <v-date-picker
-                class="datePicker"
-                v-model="selectedDate"
-                hide-header
-              ></v-date-picker>
-            </v-locale-provider>
-          </v-dialog>
+          <span class="spanTitle">메모</span>
+          <v-textarea
+            v-model="copyTodo.memo"
+            class="inputMemo"
+            hide-details="auto"
+            density="compact"
+            placeholder="메모를 입력해 주세요."
+            maxlength="50"
+            hint="50자 이내로 입력해 주세요."
+            variant="outlined"
+          ></v-textarea>
 
-          <!-- 시간 선택 -->
-          <button class="dateAndTimeSelector" @click="openTimePicker">
-            <template v-if="selectedTime || copyTodo.dueTime">
-              <span
-                >{{ selectedTime || copyTodo.dueTime.slice(0, -3) }}&nbsp</span
-              >
-              <v-icon size="sm">mdi-archive-clock-outline</v-icon>
-            </template>
-            <template v-else>
-              <span>하루종일&nbsp</span>
-              <v-icon size="sm">mdi-all-inclusive</v-icon>
-            </template>
-          </button>
+          <base-divider thickness="1" />
 
-          <!-- 시간 선택 모달 -->
-          <v-dialog v-model="timePickerModal">
-            <v-container>
-              <v-row
-                justify="center"
-                align-items="center"
-                style="background-color: white; border-radius: 4px"
-              >
-                <v-time-picker
-                  title="시간을 선택해주세요."
-                  color="green-lighten-1"
-                  format="24hr"
-                  v-model="selectedTime"
-                />
-                <div class="confirmBtn">
-                  <base-button
-                    action="confirm"
-                    variant="plain"
-                    @click="timePickerModal = false"
-                  ></base-button>
-                  <base-button
-                    action="delete"
-                    variant="plain"
-                    @click="(timePickerModal = false), (selectedTime = null)"
-                  ></base-button>
-                </div>
-              </v-row>
-            </v-container>
-          </v-dialog>
-        </div>
+          <span class="spanTitle">중요도</span>
+          <v-radio-group v-model="copyTodo.priority" inline hide-details>
+            <v-radio
+              v-for="(radio, index) in radioOptions"
+              :key="index"
+              :value="radio.priority"
+              :color="radio.color"
+              :class="radio.class"
+            ></v-radio>
+          </v-radio-group>
 
-        <p class="spanTitle">메모</p>
-        <v-textarea
-          v-model="copyTodo.memo"
-          class="inputMemo"
-          hide-details
-          density="compact"
-          placeholder="메모를 입력해 주세요."
-          variant="outlined"
-        ></v-textarea>
-
-        <base-divider thickness="1" />
-
-        <span class="spanTitle">중요도</span>
-        <v-radio-group v-model="copyTodo.priority" inline hide-details>
-          <v-radio
-            v-for="(radio, index) in radioOptions"
-            :key="index"
-            :value="radio.priority"
-            :color="radio.color"
-            :class="radio.class"
-          ></v-radio>
-        </v-radio-group>
-
-        <span class="spanTitle">태그</span>
+          <span class="spanTitle">태그</span>
+        </v-form>
+        <!-- v-form 종료 -->
       </v-container>
 
       <v-container class="btnContent">
@@ -154,33 +99,6 @@
           </template>
         </div>
       </template>
-
-      <!-- 삭제 모달 -->
-      <v-dialog
-        v-model="confirmDeleteModal"
-        @click:outside="confirmDeleteModal = false"
-      >
-        <v-container class="confirmDeleteContainer">
-          <v-row
-            justify="center"
-            align-items="center"
-            style="background-color: white; border-radius: 4px"
-          >
-            <span class="mb-1">할 일을 삭제합니다.</span>
-            <div class="confirmBtn">
-              <base-button action="confirm" variant="plain" @click="deleteTodo"
-                >확인</base-button
-              >
-              <base-button
-                action="cancel"
-                variant="plain"
-                @click="confirmDeleteModal = false"
-                >취소</base-button
-              >
-            </div>
-          </v-row>
-        </v-container>
-      </v-dialog>
     </v-card>
   </v-dialog>
 </template>
@@ -203,6 +121,8 @@ const props = defineProps({
 const copyTodo = reactive({
   ...props.todo,
 });
+const isValid = ref(false);
+const form = ref(null);
 
 // props.todo가 변경될 때마다 copyTodo 업데이트
 watch(
@@ -211,6 +131,10 @@ watch(
     Object.assign(copyTodo, newTodo);
   }
 );
+
+const rules = {
+  title: [(v) => !!v || "할 일을 입력해 주세요."],
+};
 
 // TODO 삭제 확인 모달
 let confirmDeleteModal = ref(false);
@@ -264,7 +188,7 @@ const openCalender = () => {
 };
 
 // 날짜 선택
-const selectedDate = ref(new Date());
+const selectedDate = ref(copyTodo.dueDate || new Date());
 
 // 날짜 포맷
 const formattedDate = (pickedDate) => {
@@ -282,7 +206,7 @@ watch(selectedDate, (newDate) => {
 });
 
 // 시간 선택
-const selectedTime = ref(null);
+const selectedTime = ref(copyTodo.dueTime || null);
 
 // 시간 선택 모달
 const timePickerModal = ref(false);
@@ -293,15 +217,22 @@ const openTimePicker = () => {
 // 시간 선택 완료 시 모달 닫기
 watch(selectedTime, (newTime) => {
   selectedTime.value = newTime;
-  console.log(selectedTime.value);
   timePickerModal.value = false;
 });
 
 // TODO 추가
 const addTodo = async () => {
-  // 할일 추가 api 호출
-  const editTodo = toRaw(copyTodo);
+  // 폼이 유효한지 확인
+  if (form.value) {
+    const { valid } = await form.value.validate(); // validate()는 Promise를 반환함
 
+    if (!valid) {
+      return;
+    }
+  }
+
+  // 유효성 검사가 완료되면 할일 추가 API 호출
+  const editTodo = toRaw(copyTodo);
   const param = {
     title: editTodo.title,
     memo: editTodo.memo,
@@ -310,10 +241,9 @@ const addTodo = async () => {
     priority: editTodo.priority,
     tag: editTodo.tag,
   };
-  console.log(param);
+
   try {
     const response = await api.post("/todos", param);
-
     emit("reload", response);
   } catch (e) {
     console.log(e);
@@ -422,7 +352,7 @@ const deleteTodo = async () => {
 }
 
 .inputTodo {
-  height: 32px !important; /* 높이 조정 */
+  min-height: 32px !important; /* 높이 조정 */
   border-radius: 0 !important; /* 테두리 둥근 정도 없애기 */
 }
 
