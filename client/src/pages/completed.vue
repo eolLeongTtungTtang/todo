@@ -62,13 +62,14 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
-import { ref, toRaw, onMounted, inject, computed } from "vue";
+import { ref, toRaw, onMounted, inject, computed, watch } from "vue";
 import api from "@/plugins/axios";
 
 const setMessage = inject("setMessage");
 
 const props = defineProps({
   setMessage: Function,
+  reloadDataFlag: Boolean,
 });
 
 const todos = ref([]);
@@ -82,8 +83,19 @@ const selectText = ref("전체선택");
 const deleteText = `선택항목을 삭제합니다.\n삭제된 항목은 복구할 수 없습니다.`;
 const restoreText = "선택항목을 복구합니다.";
 
-onMounted(async () => {
-  await fetchTodos();
+const emit = defineEmits();
+
+const reloadFlag = computed(() => props.reloadDataFlag);
+
+watch(reloadFlag, (newFlag) => {
+  if (newFlag) {
+    fetchData();
+    emit("update:reloadDataFlag", false);
+  }
+});
+
+onMounted(() => {
+  fetchTodos();
 });
 
 // 할일 목록을 불러오는 함수

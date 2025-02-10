@@ -27,6 +27,74 @@
           <base-divider thickness="1" />
 
           <!-- 날짜와 시간 선택 등... -->
+          <div class="dateAndTimeDiv">
+            <!-- 날짜 선택 -->
+            <button class="dateAndTimeSelector" @click="openCalender">
+              <span
+                >{{
+                  formattedDate(selectedDate) || copyTodo.dueDate
+                }}&nbsp</span
+              >
+              <v-icon size="sm">mdi-calendar-today-outline</v-icon>
+            </button>
+
+            <!-- 날짜 선택 모달 -->
+            <v-dialog v-model="calenderModal">
+              <v-locale-provider locale="ko">
+                <v-date-picker
+                  class="datePicker"
+                  v-model="selectedDate"
+                  hide-header
+                ></v-date-picker>
+              </v-locale-provider>
+            </v-dialog>
+
+            <!-- 시간 선택 -->
+            <button class="dateAndTimeSelector" @click="openTimePicker">
+              <template v-if="selectedTime || copyTodo.dueTime">
+                <span
+                  >{{
+                    selectedTime || copyTodo.dueTime.slice(0, -3)
+                  }}&nbsp</span
+                >
+                <v-icon size="sm">mdi-archive-clock-outline</v-icon>
+              </template>
+              <template v-else>
+                <span>하루종일&nbsp</span>
+                <v-icon size="sm">mdi-all-inclusive</v-icon>
+              </template>
+            </button>
+
+            <!-- 시간 선택 모달 -->
+            <v-dialog v-model="timePickerModal">
+              <v-container>
+                <v-row
+                  justify="center"
+                  align-items="center"
+                  style="background-color: white; border-radius: 4px"
+                >
+                  <v-time-picker
+                    title="시간을 선택해주세요."
+                    color="green-lighten-1"
+                    format="24hr"
+                    v-model="selectedTime"
+                  />
+                  <div class="confirmBtn">
+                    <base-button
+                      action="confirm"
+                      variant="plain"
+                      @click="timePickerModal = false"
+                    ></base-button>
+                    <base-button
+                      action="delete"
+                      variant="plain"
+                      @click="(timePickerModal = false), (selectedTime = null)"
+                    ></base-button>
+                  </div>
+                </v-row>
+              </v-container>
+            </v-dialog>
+          </div>
 
           <span class="spanTitle">메모</span>
           <v-textarea
@@ -99,6 +167,33 @@
           </template>
         </div>
       </template>
+
+      <!-- 삭제 모달 -->
+      <v-dialog
+        v-model="confirmDeleteModal"
+        @click:outside="confirmDeleteModal = false"
+      >
+        <v-container class="confirmDeleteContainer">
+          <v-row
+            justify="center"
+            align-items="center"
+            style="background-color: white; border-radius: 4px"
+          >
+            <span class="mb-1">할 일을 삭제합니다.</span>
+            <div class="confirmBtn">
+              <base-button action="confirm" variant="plain" @click="deleteTodo"
+                >확인</base-button
+              >
+              <base-button
+                action="cancel"
+                variant="plain"
+                @click="confirmDeleteModal = false"
+                >취소</base-button
+              >
+            </div>
+          </v-row>
+        </v-container>
+      </v-dialog>
     </v-card>
   </v-dialog>
 </template>
@@ -131,10 +226,6 @@ watch(
     Object.assign(copyTodo, newTodo);
   }
 );
-
-const rules = {
-  title: [(v) => !!v || "할 일을 입력해 주세요."],
-};
 
 // TODO 삭제 확인 모달
 let confirmDeleteModal = ref(false);
@@ -253,7 +344,6 @@ const addTodo = async () => {
 // TODO 추가 취소
 const cancelTodo = () => {
   emit("reload");
-  emit("close");
 };
 
 // TODO 수정

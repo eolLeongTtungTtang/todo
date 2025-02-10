@@ -17,7 +17,7 @@ import BaseDivider from "@/components/ui/BaseDivider.vue";
 import CalenderButton from "@/components/CalenderButton.vue";
 import CompAndTagButton from "@/components/CompAndTagButton.vue";
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, inject, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import api from "@/plugins/axios";
 
@@ -27,7 +27,27 @@ const route = useRoute();
 const todos = ref([]);
 const count = ref(0); // todo 개수
 
-onMounted(async () => {
+const props = defineProps({
+  reloadDataFlag: Boolean,
+});
+
+const emit = defineEmits();
+
+const reloadFlag = computed(() => props.reloadDataFlag);
+
+watch(reloadFlag, (newFlag) => {
+  console.log(newFlag);
+  if (newFlag) {
+    fetchData();
+    emit("update:reloadDataFlag", false);
+  }
+});
+
+onMounted(() => {
+  fetchData();
+});
+
+const fetchData = async () => {
   const response = await api.get("/todos");
 
   if (response.success) {
@@ -36,7 +56,7 @@ onMounted(async () => {
   } else {
     setMessage(response.message, "error");
   }
-});
+};
 </script>
 
 <style></style>

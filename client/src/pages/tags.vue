@@ -25,14 +25,33 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import api from "@/plugins/axios";
+
+const props = defineProps({
+  reloadDataFlag: Boolean,
+});
+
+const emit = defineEmits();
+
+const reloadFlag = computed(() => props.reloadDataFlag);
+
+watch(reloadFlag, (newFlag) => {
+  if (newFlag) {
+    fetchData();
+    emit("update:reloadDataFlag", false);
+  }
+});
 
 let panel = ref(null);
 const todos = ref({});
 const todosLength = ref(0);
 
-onMounted(async () => {
+onMounted(() => {
+  fetchData();
+});
+
+const fetchData = async () => {
   const response = await api.get("/todos/tag");
 
   if (response.success) {
@@ -41,7 +60,7 @@ onMounted(async () => {
   } else {
     errorMsg.value = response.message;
   }
-});
+};
 </script>
 
 <style scoped>

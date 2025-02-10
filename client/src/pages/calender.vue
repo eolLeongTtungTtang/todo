@@ -25,6 +25,19 @@ const setMessage = inject("setMessage");
 const selectedDate = ref(new Date());
 const todos = ref([]);
 
+const props = defineProps(["reloadDataFlag"]);
+
+const emit = defineEmits();
+
+const reloadFlag = computed(() => props.reloadDataFlag);
+
+watch(reloadFlag, (newFlag) => {
+  if (newFlag) {
+    fetchData();
+    emit("update:reloadDataFlag", false);
+  }
+});
+
 const formatDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작해서 1을 더해줌
@@ -37,14 +50,14 @@ const formatDate = (date) => {
 const formattedSelectedDate = computed(() => formatDate(selectedDate.value));
 
 watch(selectedDate, () => {
-  fetchTodo();
+  fetchData();
 });
 
 onMounted(() => {
-  fetchTodo();
+  fetchData();
 });
 
-const fetchTodo = async () => {
+const fetchData = async () => {
   try {
     const param = {
       date: formattedSelectedDate.value,

@@ -21,7 +21,7 @@
 <script setup>
 import BaseTodolist from "@/components/ui/BaseTodolist.vue";
 import BaseDivider from "@/components/ui/BaseDivider.vue";
-import { ref, computed, onMounted, inject } from "vue";
+import { ref, computed, onMounted, inject, watch } from "vue";
 import api from "@/plugins/axios";
 
 let panel = ref(null);
@@ -30,11 +30,28 @@ const todosLast = ref([]);
 
 const setMessage = inject("setMessage");
 
+const props = defineProps(["reloadDataFlag"]);
+
+const emit = defineEmits();
+
+const reloadFlag = computed(() => props.reloadDataFlag);
+
+watch(reloadFlag, (newFlag) => {
+  if (newFlag) {
+    fetchData();
+    emit("update:reloadDataFlag", false);
+  }
+});
+
 let dividerFlag = computed(() => {
   return typeof panel.value !== "number";
 });
 
-onMounted(async () => {
+onMounted(() => {
+  fetchData();
+});
+
+const fetchData = async () => {
   try {
     const response = await api.get("/todos/last");
 
@@ -47,7 +64,7 @@ onMounted(async () => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 </script>
 
 <style scoped>

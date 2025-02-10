@@ -3,7 +3,11 @@
     <v-main>
       <the-header />
       <div class="container">
-        <router-view :key="route.fullPath" />
+        <router-view
+          :reloadDataFlag="reloadDataFlag"
+          @update:reloadDataFlag="reloadDataFlag = $event"
+          :key="route.fullPath"
+        />
       </div>
       <teleport to="body">
         <v-alert
@@ -43,6 +47,7 @@ const messageType = ref("");
 const openModal = ref(false);
 const mode = ref("");
 const todo = ref({});
+const reloadDataFlag = ref(false);
 
 const setMessage = (message, type) => {
   returnMessage.value = message;
@@ -66,9 +71,13 @@ const closeModal = () => {
 };
 
 const reloadData = (response) => {
-  location.reload();
-  // const status = response.success ? "success" : "error";
-  // setMessage(response.message, status);
+  if (response) {
+    const status = response.success ? "success" : "error";
+    setMessage(response.message, status);
+  }
+  reloadDataFlag.value = true;
+
+  closeModal();
 };
 
 provide("setMessage", setMessage);
