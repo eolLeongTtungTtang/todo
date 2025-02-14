@@ -202,11 +202,10 @@
 import BaseButton from "./BaseButton.vue";
 import BaseDivider from "./BaseDivider.vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
-import { ref, watch, computed, reactive, inject, toRaw } from "vue";
+import { ref, watch, computed, reactive, toRaw, watchEffect } from "vue";
 import api from "@/plugins/axios";
 
-const emit = defineEmits(["close", "reload"]);
-const setMessage = inject("setMessage");
+const emit = defineEmits(["reload"]);
 
 const props = defineProps({
   mode: String,
@@ -218,6 +217,10 @@ const copyTodo = reactive({
 });
 const isValid = ref(false);
 const form = ref(null);
+const calenderModal = ref(false);
+const selectedDate = ref(copyTodo.dueDate || new Date());
+const selectedTime = ref(copyTodo.dueTime || null);
+const timePickerModal = ref(false);
 
 // props.todo가 변경될 때마다 copyTodo 업데이트
 watch(
@@ -242,21 +245,19 @@ const modalTitle = computed(() => {
   return `할 일 ${modalType[mode.value]?.title}` || "";
 });
 
-watch(
-  () => mode.value,
-  (newMode) => {
-    if (newMode === "add") {
-      copyTodo.title = "";
-      copyTodo.memo = "";
-      copyTodo.dueDate = "";
-      copyTodo.dueTime = "";
-      copyTodo.priority = null;
-      copyTodo.isCompleted = false;
-      copyTodo.tag = null;
-    }
-  },
-  { immediate: true } // 초기화 시점에 즉시 실행
-);
+watchEffect(() => {
+  if (mode.value === "add" && !props.todo.value) {
+    copyTodo.title = "";
+    copyTodo.memo = "";
+    copyTodo.dueDate = "";
+    copyTodo.dueTime = "";
+    copyTodo.priority = null;
+    copyTodo.isCompleted = false;
+    copyTodo.tag = null;
+    selectedDate.value = new Date();
+    selectedTime.value = null;
+  }
+});
 
 // 중요도
 const radioOptions = [
@@ -273,13 +274,9 @@ const selectTag = (tag) => {
 };
 
 // 캘린더 모달
-const calenderModal = ref(false);
 const openCalender = () => {
   calenderModal.value = !calenderModal.value;
 };
-
-// 날짜 선택
-const selectedDate = ref(copyTodo.dueDate || new Date());
 
 // 날짜 포맷
 const formattedDate = (pickedDate) => {
@@ -296,11 +293,7 @@ watch(selectedDate, (newDate) => {
   calenderModal.value = false;
 });
 
-// 시간 선택
-const selectedTime = ref(copyTodo.dueTime || null);
-
 // 시간 선택 모달
-const timePickerModal = ref(false);
 const openTimePicker = () => {
   timePickerModal.value = !timePickerModal.value;
 };

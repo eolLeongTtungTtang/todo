@@ -36,7 +36,6 @@ const emit = defineEmits();
 const reloadFlag = computed(() => props.reloadDataFlag);
 
 watch(reloadFlag, (newFlag) => {
-  console.log(newFlag);
   if (newFlag) {
     fetchData();
     emit("update:reloadDataFlag", false);
