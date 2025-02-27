@@ -240,8 +240,8 @@ watch(
   }
 );
 
-watch(selectedDate, (newDate) => {
-  selectedDate.value = newDate;
+watchEffect(() => {
+  selectedDate.value = new Date(selectedDate.value);
 });
 
 watch(selectedTime, (newTime) => {
@@ -300,13 +300,6 @@ const formattedDate = (pickedDate) => {
   return `${year}-${month}-${day}`;
 };
 
-// 날짜를 UTC로 변환하여 전송
-const formattedDateForApi = (pickedDate) => {
-  const date = new Date(pickedDate);
-  // UTC로 변환하여 'YYYY-MM-DD' 형식으로 반환
-  return date.toISOString().split("T")[0];
-};
-
 // TODO 추가
 const addTodo = async () => {
   // 폼이 유효한지 확인
@@ -321,7 +314,7 @@ const addTodo = async () => {
       const param = {
         title: editTodo.title,
         memo: editTodo.memo,
-        dueDate: selectedDate.value || copyTodo.dueDate,
+        dueDate: formattedDate(selectedDate.value) || copyTodo.dueDate,
         dueTime: selectedTime.value || copyTodo.dueTime,
         priority: editTodo.priority,
         tag: editTodo.tag,
@@ -349,7 +342,7 @@ const editTodo = async () => {
   const param = {
     title: editTodo.title,
     memo: editTodo.memo,
-    dueDate: selectedDate.value || editTodo.dueDate,
+    dueDate: formattedDate(selectedDate.value) || editTodo.dueDate,
     dueTime: selectedTime.value || editTodo.dueTime,
     priority: editTodo.priority,
     tag: editTodo.tag,
