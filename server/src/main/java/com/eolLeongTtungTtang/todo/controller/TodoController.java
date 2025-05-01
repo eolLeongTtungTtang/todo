@@ -41,6 +41,7 @@ public class TodoController {
                             .build());
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -62,6 +63,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -82,6 +84,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -109,6 +112,7 @@ public class TodoController {
                     .build());
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -131,6 +135,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -172,6 +177,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -194,6 +200,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -221,6 +228,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -242,6 +250,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -264,6 +273,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -287,6 +297,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
@@ -309,6 +320,7 @@ public class TodoController {
 
         } catch (Exception e) {
             // 예기치 않은 예외 처리
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.builder()
                     .success(false)
                     .message("요청 처리 중 오류가 발생했습니다.")
